@@ -48,6 +48,7 @@ pub struct DiskImage {
     mounted: bool,
 }
 
+//Disk emulator functions
 impl DiskImage {
     fn open(file: PseudoFile) -> bool {
         return true;
@@ -75,8 +76,9 @@ impl DiskImage {
 /*
 Utilized code from : https://www.joshmcguigan.com/blog/build-your-own-shell-rust/
 and https://tjtelan.com/blog/building-a-unix-shell-in-rust-part-4/
-*/
 
+Shell functions
+*/
 struct Command {
     keyword: String,
     args: Vec<String>,
@@ -140,7 +142,7 @@ impl FromStr for Commands {
 
 pub fn create(mut file: PseudoFile) -> DiskImage {
     DiskImage {
-        pseudo_file: file,
+        file: file,
         blocks: 1024,
         reads: 0,
         writes: 0,
@@ -148,6 +150,7 @@ pub fn create(mut file: PseudoFile) -> DiskImage {
     }
 }
 
+//File system commands
 pub fn format(file: PseudoFile) -> bool {
     return true;
 }
@@ -160,13 +163,24 @@ pub fn unmount() -> bool {
     return true;
 }
 
-pub fn delete() {}
-
 pub fn readInode(inode_number: u32) {}
 
 pub fn writeInode(inode_num: u32, updated_inode: Inode) -> bool {
     return true;
 }
+
+pub fn getFreeInode() {}
+
+pub fn readBlock(blockID: u32) {}
+
+pub fn writeBlock(blockID: u32, block: Block) -> bool {
+    return true;
+}
+
+pub fn getFreeBlock() {}
+
+//Shell commands
+pub fn delete() {}
 
 pub fn cat() {}
 
