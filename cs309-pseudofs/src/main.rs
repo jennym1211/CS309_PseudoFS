@@ -12,11 +12,23 @@ pub struct Superblock {
 
 pub struct Inode {
     inode_num: u32,
-    inode_type: u32,
+    inode_type: InodeType,
     start_block: u32,
     size: u32,
     c_time: String //find a date/time datastruct idk
 }
+
+
+pub enum InodeType
+
+{
+    Free,
+    File,
+    Directory,
+    Symlink
+}
+
+
 
 pub struct Block {
     nextNode: u32,
@@ -230,19 +242,7 @@ Utilized code from : https://www.joshmcguigan.com/blog/build-your-own-shell-rust
 */
 pub fn shell()
 {
-    loop {
-        print!("> ");
-        stdout().flush();
-
-        let mut input = String::new();
-        stdin().read_line(&mut input).unwrap()
-             .expect("Command input failed.");
-
-             let mut commands = input.trim().split(" | ").peekable();
-             let mut previous_command = None;
-
-
-    }
+ 
 }
 
 
