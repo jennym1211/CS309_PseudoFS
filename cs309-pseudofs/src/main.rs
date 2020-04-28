@@ -192,7 +192,9 @@ pub fn copyout() {}
 
 pub fn help() {}
 
-pub fn exit() {}
+pub fn exit() {
+    println!("Exiting shell...please wait");
+}
 
 /*
 Utilized code from : https://www.joshmcguigan.com/blog/build-your-own-shell-rust/
