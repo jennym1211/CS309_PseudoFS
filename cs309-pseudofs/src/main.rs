@@ -118,28 +118,29 @@ impl FromStr for Commands {
     }
 }
 
-/*
-  fn process_command(c : Command) -> i32 {
-    match Commands::from_str(&c.keyword) {
-      Ok(Commands::Create) => create(),
-      Ok(Commands::Format) => format(),
-      Ok(Commands::Unmount) => unmount(),
-      Ok(Commands::Mount) => mount(),
-      Ok(Commands::Delete) => delete(),
-      Ok(Commands::Cat) => cat(),
-      Ok(Commands::Ls) => ls(),
-      Ok(Commands::Copyin) => copyin(),
-      Ok(Commands::Copyout) => copyout(),
-      Ok(Commands::Help) => help(),
-      Ok(Commands::Exit) => exit(),
-      _ => {
-          println!("{}: command not found", &c.keyword);
-          1
-      },
-    }
-  }
-*/
+/*fn process_command(c: Command) -> i32 {
+    //need to parse command out to get information
 
+    match Commands::from_str(&c.keyword) {
+        Ok(Commands::Create) => create(),
+        Ok(Commands::Format) => format(),
+        Ok(Commands::Unmount) => unmount(),
+        Ok(Commands::Mount) => mount(),
+        Ok(Commands::Delete) => delete(),
+        Ok(Commands::Cat) => cat(),
+        Ok(Commands::Ls) => ls(),
+        Ok(Commands::Copyin) => copyin(),
+        Ok(Commands::Copyout) => copyout(),
+        Ok(Commands::Help) => help(),
+        Ok(Commands::Exit) => exit(),
+        _ => {
+            println!("{}: command not found", &c.keyword);
+            1
+        }
+    }
+}*/
+
+//File system commands
 pub fn create(mut file: PseudoFile) -> DiskImage {
     DiskImage {
         file: file,
@@ -150,7 +151,6 @@ pub fn create(mut file: PseudoFile) -> DiskImage {
     }
 }
 
-//File system commands
 pub fn format(file: PseudoFile) -> bool {
     return true;
 }
@@ -195,9 +195,7 @@ pub fn help() {}
 pub fn exit() {}
 
 /*
-
 Utilized code from : https://www.joshmcguigan.com/blog/build-your-own-shell-rust/
-
 */
 pub fn shell() {}
 
