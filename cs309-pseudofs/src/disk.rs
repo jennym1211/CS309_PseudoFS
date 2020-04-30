@@ -1,4 +1,8 @@
 use block::Block;
+use std::io::BufReader;
+use std::io::BufWriter;
+use std::path::Path;
+
 
     #[derive(Debug, PartialEq, Clone)]
     pub struct Disk {
@@ -11,7 +15,11 @@ use block::Block;
     
     //Disk emulator functions
     impl Disk {
-        fn open(file: String) -> bool {
+
+        
+
+        fn open(file_name: String) -> bool {
+
             return true;
         }
     
