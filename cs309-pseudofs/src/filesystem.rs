@@ -4,8 +4,9 @@ use crate::disk::Disk;
 use crate::inode::Inode;
 use crate::superblock::Superblock;
 use std::fs::File;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct FileSystem {
     pub disk: Disk,
     pub superblock: Superblock,
@@ -25,7 +26,7 @@ impl FileSystem {
         {
             let mut diagnostics = String::from("File system magic number is: ");
 
-            if (self.mounted == true) {
+            if self.mounted == true {
                 diagnostics.push_str("Valid \n");
             } else {
                 diagnostics.push_str("Invalid \n");
@@ -59,13 +60,13 @@ impl FileSystem {
     }
 
     pub fn format(fileName: String) -> bool {
-        let magic_number = String::from("0x70736575646F4653");
+        let magic_number = String::from("0x70736575646F4653");  // 0x70736575646F4653 is always the magic number
         let mut total_blocks: u32 = 0;
         let mut total_inodes: u32 = 0;
         let mut free_blocks_vec: Vec<u32> = Vec::new();
         let mut free_inodes_vec: Vec<u32> = Vec::new();
         let mut super_block = Superblock {
-            magic_number: magic_number, // 0x70736575646F4653 magic number
+            magic_number: magic_number,
             total_blocks: total_blocks,
             free_blocks: free_blocks_vec,
             total_inodes: total_inodes,
@@ -97,4 +98,26 @@ impl FileSystem {
         return true;
     }
     pub fn getFreeBlock() {}
+
+
+    pub fn toJSON(&self)
+        {
+            let serialized_block = serde_json::to_string(&self).unwrap();
+
+            println!("{}", serialized_block);
+            
+        }
+
+        pub fn fromJSON(source: String) -> FileSystem
+        {
+            let json_string = "{\"disk\":temp,\"superblock\":\"temp\",\"directory\":\"temp\",\"inodes\":temp,\"inodes_per_block\":temp,\"mounted\":true}}";
+
+            let filesystem: FileSystem = serde_json::from_str(&json_string).unwrap();
+            return filesystem;
+
+        }
+
+
+
+
 }

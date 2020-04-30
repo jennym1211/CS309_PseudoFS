@@ -2,8 +2,8 @@ use block::Block;
 use std::io::BufReader;
 use std::io::BufWriter;
 use std::path::Path;
-
-#[derive(Debug, PartialEq, Clone)]
+use serde::{Serialize, Deserialize};
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Disk {
     pub file: Vec<String>,
     pub blocks: u32,
@@ -40,13 +40,103 @@ impl Disk {
             return false;
         }
     }
+
+
+    
+        //Getters
+        pub fn get_reads(&self) -> &u128 {
+            return &self.reads
+         }
+ 
+         pub fn get_writes(&self) -> &u128 {
+             return &self.writes;
+          }
+         
+          pub fn get_blocks(&self) -> &u32 {
+             return &self.blocks;
+          }
+
+          pub fn is_mounted(&self) -> &bool
+          {
+              return &self.mounted;
+          }
+
 }
 
 pub mod block {
-    #[derive(Debug, PartialEq, Clone)]
+use serde::{Serialize, Deserialize};
+
+    #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
     pub struct Block {
         pub blockID: u32,
         pub nextNode: u32,
         pub data: String,
     }
+
+
+    impl Block
+
+    {
+
+        //Getters
+        pub fn get_blockid(&self) -> &u32 {
+           return &self.blockID;
+        }
+
+        pub fn get_next_node(&self) -> &u32 {
+            return &self.nextNode;
+         }
+        
+         pub fn get_data(&self) -> &String {
+            return &self.data;
+         }
+
+         //Setters
+         fn set_blockID(&mut self) -> &mut u32 {
+            &mut self.blockID
+        }
+
+        fn set_nextNode(&mut self) -> &mut u32 {
+            &mut self.nextNode
+        }
+
+        fn set_data(&mut self) -> &mut String {
+            &mut self.data
+        }
+
+
+        /*
+
+            Serialize disk to a JSON string
+
+        */
+        pub fn toJSON(&self)
+        {
+            let serialized_block = serde_json::to_string(&self).unwrap();
+
+            println!("{}", serialized_block);
+            
+        }
+
+        
+        /*
+
+            Return a block object from JSON string
+
+
+            TO DO: fix json_string
+
+        */
+        pub fn fromJSON(source: String) -> Block
+        {
+            let json_string = "{\"blockID\":0,\"nextNode\":\"0\",\"data\":\"temp\"}}";
+
+            let block: Block = serde_json::from_str(&json_string).unwrap();
+
+            return block;
+
+        }
+
+    }
+
 }
