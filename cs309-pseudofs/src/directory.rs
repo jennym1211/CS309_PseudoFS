@@ -1,62 +1,80 @@
 use crate::inode::Inode;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Directory {
+    pub directory_contents: HashMap<String, u32>,
+}
+
+/*pub struct Directory {
     pub name: String,
     pub inode: Inode,
     pub file_name: String,
-}
+}*/
 
+impl Directory {
+    pub fn new() -> Directory {
+        let mut contents: HashMap<String, u32> = HashMap::new();
 
-impl Directory
-{
+        contents.clear();
 
-        //Getters
-        pub fn get_name(&self) -> &String {
-            return &self.name;
-        }
+        contents.insert(String::from("."), 0);
+        contents.insert(String::from(".."), 0);
+        contents.insert(String::from("/"), 0);
 
-        pub fn get_inode(&self) -> &Inode {
-            return &self.inode;
-        }
-        
-        pub fn get_filename(&self) -> &String {
-            return &self.file_name;
-        }
+        let mut directory = Directory {
+            directory_contents: contents,
+        };
 
-        //Setters
-        fn set_name(&mut self) -> &mut String {
-            &mut self.name
-        }
+        return directory;
+    }
 
-        fn set_inode(&mut self) -> &mut Inode {
-            &mut self.inode
-        }
-
-        fn set_fileName(&mut self) -> &mut String {
-            &mut self.file_name
-        }
-
-
-            pub fn toJSON(&self)
+    pub fn remove(&mut self, name: String) {
+        if !name.eq("/") || name.eq(".") || name.eq("..")
+        //cannot remove root
         {
-            let serialized_block = serde_json::to_string(&self).unwrap();
-
-            println!("{}", serialized_block);
-            
+            self.directory_contents.remove(&name);
+        } else {
+            println!("Cannot remove this directory!");
         }
+    }
 
-        pub fn fromJSON(source: String) -> Directory
-        {
-            let json_string = "{\"name\":temp,\"inode\":\"temp\",\"file_name\":\"temp\"}}";
+    /*
 
-            let directory: Directory = serde_json::from_str(&json_string).unwrap();
-            return directory;
+        Returns a vec of all the files in the directory, sorted.
 
+    */
+    pub fn getContents(&self) -> Vec<String> {
+        let mut names: Vec<String> = Vec::new();
+        let mut i = 0;
+
+        // do for loop
+        return names;
+    }
+    /*
+
+       Adds a file to the directory
+
+    */
+    pub fn add(&mut self, inode_num: u32, name: String) -> bool {
+        if inode_num > 0 {
+            self.directory_contents.insert(name, inode_num);
+            return true;
         }
+        return false;
+    }
 
+    pub fn toJSON(&self) {
+        let serialized_block = serde_json::to_string(&self).unwrap();
 
+        println!("{}", serialized_block);
+    }
 
+    pub fn fromJSON(source: String) -> Directory {
+        let json_string = "{\"name\":temp,\"inode\":\"temp\",\"file_name\":\"temp\"}}";
 
+        let directory: Directory = serde_json::from_str(&json_string).unwrap();
+        return directory;
+    }
 }

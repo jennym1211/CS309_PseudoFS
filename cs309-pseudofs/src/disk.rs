@@ -1,8 +1,8 @@
 use block::Block;
+use serde::{Deserialize, Serialize};
 use std::io::BufReader;
 use std::io::BufWriter;
 use std::path::Path;
-use serde::{Serialize, Deserialize};
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Disk {
     pub file: Vec<String>,
@@ -14,15 +14,17 @@ pub struct Disk {
 
 //Disk emulator functions
 impl Disk {
-    fn open(file_name: String) -> bool {
+
+    
+    pub fn open(&self, file_name: String) -> bool {
         return true;
     }
 
-    fn close(disk: Disk) -> bool {
+    pub fn close(disk: Disk) -> bool {
         return true;
     }
 
-    fn read(disk: Disk, blockID: u32) -> Block {
+    pub fn read(&self, blockID: u32) -> Block {
         //need to increment
         let temp_block = Block {
             blockID: 0,
@@ -41,30 +43,26 @@ impl Disk {
         }
     }
 
+    //Getters
+    pub fn get_reads(&self) -> &u128 {
+        return &self.reads;
+    }
 
-    
-        //Getters
-        pub fn get_reads(&self) -> &u128 {
-            return &self.reads
-         }
- 
-         pub fn get_writes(&self) -> &u128 {
-             return &self.writes;
-          }
-         
-          pub fn get_blocks(&self) -> &u32 {
-             return &self.blocks;
-          }
+    pub fn get_writes(&self) -> &u128 {
+        return &self.writes;
+    }
 
-          pub fn is_mounted(&self) -> &bool
-          {
-              return &self.mounted;
-          }
+    pub fn get_blocks(&self) -> &u32 {
+        return &self.blocks;
+    }
 
+    pub fn is_mounted(&self) -> &bool {
+        return &self.mounted;
+    }
 }
 
 pub mod block {
-use serde::{Serialize, Deserialize};
+    use serde::{Deserialize, Serialize};
 
     #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
     pub struct Block {
@@ -73,26 +71,33 @@ use serde::{Serialize, Deserialize};
         pub data: String,
     }
 
+    impl Block {
 
-    impl Block
-
-    {
+        pub fn new(blockID: u32, nextNode: u32, data: String) -> Block
+        {
+            Block
+            {
+                blockID:blockID,
+                nextNode:nextNode,
+                data:data
+            }
+        }
 
         //Getters
         pub fn get_blockid(&self) -> &u32 {
-           return &self.blockID;
+            return &self.blockID;
         }
 
         pub fn get_next_node(&self) -> &u32 {
             return &self.nextNode;
-         }
-        
-         pub fn get_data(&self) -> &String {
-            return &self.data;
-         }
+        }
 
-         //Setters
-         fn set_blockID(&mut self) -> &mut u32 {
+        pub fn get_data(&self) -> &String {
+            return &self.data;
+        }
+
+        //Setters
+        fn set_blockID(&mut self) -> &mut u32 {
             &mut self.blockID
         }
 
@@ -104,21 +109,17 @@ use serde::{Serialize, Deserialize};
             &mut self.data
         }
 
-
         /*
 
             Serialize disk to a JSON string
 
         */
-        pub fn toJSON(&self)
-        {
+        pub fn toJSON(&self) {
             let serialized_block = serde_json::to_string(&self).unwrap();
 
             println!("{}", serialized_block);
-            
         }
 
-        
         /*
 
             Return a block object from JSON string
@@ -127,16 +128,12 @@ use serde::{Serialize, Deserialize};
             TO DO: fix json_string
 
         */
-        pub fn fromJSON(source: String) -> Block
-        {
+        pub fn fromJSON(source: String) -> Block {
             let json_string = "{\"blockID\":0,\"nextNode\":\"0\",\"data\":\"temp\"}}";
 
             let block: Block = serde_json::from_str(&json_string).unwrap();
 
             return block;
-
         }
-
     }
-
 }

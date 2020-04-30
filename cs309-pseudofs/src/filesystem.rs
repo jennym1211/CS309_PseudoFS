@@ -3,8 +3,8 @@ use crate::disk::block::Block;
 use crate::disk::Disk;
 use crate::inode::Inode;
 use crate::superblock::Superblock;
+use serde::{Deserialize, Serialize};
 use std::fs::File;
-use serde::{Serialize, Deserialize};
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct FileSystem {
@@ -60,7 +60,7 @@ impl FileSystem {
     }
 
     pub fn format(fileName: String) -> bool {
-        let magic_number = String::from("0x70736575646F4653");  // 0x70736575646F4653 is always the magic number
+        let magic_number = String::from("0x70736575646F4653"); // 0x70736575646F4653 is always the magic number
         let mut total_blocks: u32 = 0;
         let mut total_inodes: u32 = 0;
         let mut free_blocks_vec: Vec<u32> = Vec::new();
@@ -76,7 +76,18 @@ impl FileSystem {
         return true;
     }
 
-    pub fn mount(file_name: String) -> bool {
+    pub fn mount(&self, file_name: String) -> bool {
+        if *self.disk.is_mounted() == false && *self.is_mounted() == false {
+            self.disk.open(file_name);
+            self.superblock
+                .fromJSON(self.disk.read(0).get_data().to_string());
+
+            //self.inodes =
+
+            let mut inode_block_num = 1;
+            let mut current_node = 0;
+        }
+
         return true;
     }
 
@@ -84,6 +95,9 @@ impl FileSystem {
         return true;
     }
 
+    pub fn is_mounted(&self) -> &bool {
+        return &self.mounted;
+    }
     pub fn readInode(inode_number: u32) {}
 
     pub fn writeInode(inode_num: u32, updated_inode: Inode) -> bool {
@@ -99,25 +113,16 @@ impl FileSystem {
     }
     pub fn getFreeBlock() {}
 
+    pub fn toJSON(&self) {
+        let serialized_block = serde_json::to_string(&self).unwrap();
 
-    pub fn toJSON(&self)
-        {
-            let serialized_block = serde_json::to_string(&self).unwrap();
+        println!("{}", serialized_block);
+    }
 
-            println!("{}", serialized_block);
-            
-        }
+    pub fn fromJSON(source: String) -> FileSystem {
+        let json_string = "{\"disk\":temp,\"superblock\":\"temp\",\"directory\":\"temp\",\"inodes\":temp,\"inodes_per_block\":temp,\"mounted\":true}}";
 
-        pub fn fromJSON(source: String) -> FileSystem
-        {
-            let json_string = "{\"disk\":temp,\"superblock\":\"temp\",\"directory\":\"temp\",\"inodes\":temp,\"inodes_per_block\":temp,\"mounted\":true}}";
-
-            let filesystem: FileSystem = serde_json::from_str(&json_string).unwrap();
-            return filesystem;
-
-        }
-
-
-
-
+        let filesystem: FileSystem = serde_json::from_str(&json_string).unwrap();
+        return filesystem;
+    }
 }
