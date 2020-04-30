@@ -2,15 +2,15 @@ use std::io;
 use std::num::ParseIntError;
 use std::str::FromStr;
 
-mod superblock;
-mod inode;
+mod directory;
 mod disk;
 mod filesystem;
-mod directory;
-use inode::Inode;
-use disk::Disk;
+mod inode;
+mod superblock;
 use disk::block::Block;
+use disk::Disk;
 use filesystem::FileSystem;
+use inode::Inode;
 
 /*
 Utilized code from : https://www.joshmcguigan.com/blog/build-your-own-shell-rust/
@@ -80,7 +80,6 @@ impl FromStr for Commands {
 }*/
 
 //File system commands
-
 
 //Shell commands
 pub fn delete() {}
