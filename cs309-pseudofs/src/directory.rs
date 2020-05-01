@@ -72,9 +72,7 @@ impl Directory {
     }
 
     pub fn fromJSON(source: String) -> Directory {
-        let json_string = "{\"name\":temp,\"inode\":\"temp\",\"file_name\":\"temp\"}}";
-
-        let directory: Directory = serde_json::from_str(&json_string).unwrap();
+        let directory: Directory = serde_json::from_str(&source).unwrap();
         return directory;
     }
 }

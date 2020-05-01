@@ -37,8 +37,8 @@ impl FileSystem {
             diagnostics.push_str("\t Writes: ");
             diagnostics.push_str(&self.disk.writes.to_string());
             diagnostics.push_str("\n \t Inodes: ");
-            diagnostics.push_str(&self.superblock.total_inodes.to_string());
-            //diagnostics.push_str("\t \t Free Inodes: ");
+            //diagnostics.push_str(&self.superblock.inodes_vec.to_string());
+            diagnostics.push_str("\t \t Free Inodes: ");
             //diagnostics.push_str(&self.superblock.total_inodes.to_string());
             //diagnostics.push_str("\t \t Used Inodes: ");
             diagnostics.push_str("\n \t Blocks: ");
@@ -63,15 +63,9 @@ impl FileSystem {
         let magic_number = String::from("0x70736575646F4653"); // 0x70736575646F4653 is always the magic number
         let mut total_blocks: u32 = 0;
         let mut total_inodes: u32 = 0;
-        let mut free_blocks_vec: Vec<u32> = Vec::new();
-        let mut free_inodes_vec: Vec<u32> = Vec::new();
-        let mut super_block = Superblock {
-            magic_number: magic_number,
-            total_blocks: total_blocks,
-            free_blocks: free_blocks_vec,
-            total_inodes: total_inodes,
-            free_inodes: free_inodes_vec,
-        };
+        let mut free_blocks_vec: Vec<Block> = Vec::new();
+        let mut inodes_vec: Vec<Inode> = Vec::new();
+        let mut super_block = Superblock::new(magic_number, total_blocks, free_blocks_vec,inodes_vec);
 
         return true;
     }

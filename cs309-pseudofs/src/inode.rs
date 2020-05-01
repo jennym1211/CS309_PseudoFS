@@ -82,9 +82,7 @@ impl Inode {
     }
 
     pub fn fromJSON(source: String) -> Inode {
-        let json_string = "{\"inode_num\":temp,\"inode_type\":\"temp\",\"start_block\":\"temp\",\"size\":temp,\"c_time\":temp}}";
-
-        let inode: Inode = serde_json::from_str(&json_string).unwrap();
+        let inode: Inode = serde_json::from_str(&source).unwrap();
         return inode;
     }
 }
