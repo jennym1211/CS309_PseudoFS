@@ -71,7 +71,7 @@ impl FileSystem {
         return true;
     }
 
-    pub fn mount(&self, file_name: String) -> bool {
+    pub fn mount(&mut self, file_name: String) -> bool {
         if *self.disk.is_mounted() == false && *self.is_mounted() == false {
             self.disk.open(file_name);
             self.superblock
