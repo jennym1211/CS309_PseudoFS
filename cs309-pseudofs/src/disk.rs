@@ -24,12 +24,15 @@ impl Disk {
     */
     pub fn open(&self, file_name: String) -> bool {
         if *self.is_mounted() == false {
+            println!("Disk image loading...Reading files...");
             let path = Path::new(&file_name);
             let line_num = 7usize;
             let line = self.get_line_at(&path, line_num - 1);
             println!("{}", line.unwrap());
+            println!("Disk image loaded and ready to run...");
             return true;
         } else {
+            println!("Disk image unmounted...Please mount image file...");
             return false;
         }
     }
