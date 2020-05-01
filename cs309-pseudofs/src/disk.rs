@@ -152,7 +152,6 @@ pub mod block {
         */
         pub fn toJSON(&mut self) {
             let serialized_block = serde_json::to_string(&self).unwrap();
-
             println!("{}", serialized_block);
         }
 
