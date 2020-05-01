@@ -51,20 +51,13 @@ impl Disk {
     }
 
     pub fn read(&mut self, blockID: u32) -> Block {
-        
         self.reads = self.reads + 1;
-
         let mut block = Block::default();
-
         block.fromJSON(self.disk_content[blockID as usize].to_string());
-
         return block;
     }
 
     pub fn write(&mut self, blockID: u32, mut block: Block) -> bool {
-        
-        block = Block::default();
-        
         if block.get_blockid() >= &0
             && block.get_blockid() < &(self.disk_content.len() as u32)
             && *self.is_mounted() == true
@@ -106,15 +99,11 @@ pub mod block {
     }
 
     impl Block {
-
-        pub fn default() -> Block
-        {
-            Block{
-                
-                blockID:0,
-                nextNode:0,
-                data: String::from("")
-
+        pub fn default() -> Block {
+            Block {
+                blockID: 0,
+                nextNode: 0,
+                data: String::from(""),
             }
         }
         pub fn new(blockID: u32, nextNode: u32, data: String) -> Block {
