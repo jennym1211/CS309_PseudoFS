@@ -37,12 +37,12 @@ impl Disk {
         lines.nth(line_num).expect("No line found at that position")
     }
 
-    pub fn close(disk: Disk) -> bool {
+    pub fn close(disk: &mut Disk) -> bool {
         if *disk.is_mounted() {
             println!("Finishing writing jobs and closing disk image...");
             //disk.write(block.blockID, block.);
             println!("Unmounting disk image...");
-            disk.mounted == false;
+            disk.mounted = false;
             return true;
         } else {
             println!("Disk image already closed and unmounted...Please mount disk image...");
