@@ -32,7 +32,6 @@ impl Disk {
         self.reads = self.reads + 1;
 
         return Block.fromJSON(self.disk_content[blockID as usize]);
-
     }
 
     pub fn write(&self, blockID: u32, block: Block) -> bool {
@@ -112,9 +111,7 @@ pub mod block {
         }
 
         /*
-
             Serialize disk to a JSON string
-
         */
         pub fn toJSON(&self) {
             let serialized_block = serde_json::to_string(&self).unwrap();
@@ -123,9 +120,7 @@ pub mod block {
         }
 
         /*
-
             Return a block object from JSON string
-
         */
         pub fn fromJSON(source: String) -> Block {
             let block: Block = serde_json::from_str(&source).unwrap();

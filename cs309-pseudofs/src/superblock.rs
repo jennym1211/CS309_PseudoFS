@@ -1,7 +1,6 @@
-use serde::{Deserialize, Serialize};
 use crate::disk::block::Block;
 use crate::inode::Inode;
-
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Superblock {
@@ -12,24 +11,24 @@ pub struct Superblock {
 }
 
 impl Superblock {
-
-    pub fn new(magic_number: String, total_blocks: u32,free_blocks: Vec<Block>, inodes_vec: Vec<Inode> )-> Superblock
-    {
-        Superblock
-        {
+    pub fn new(
+        magic_number: String,
+        total_blocks: u32,
+        free_blocks: Vec<Block>,
+        inodes_vec: Vec<Inode>,
+    ) -> Superblock {
+        Superblock {
             magic_number: magic_number,
-            total_blocks:total_blocks,
+            total_blocks: total_blocks,
             free_blocks: free_blocks,
-            inodes_vec: inodes_vec
+            inodes_vec: inodes_vec,
         }
     }
 
-    pub fn get_total_inodes(&self) -> usize
-    {
+    pub fn get_total_inodes(&self) -> usize {
         let mut inode_size = self.inodes_vec.len();
 
         return inode_size;
-
     }
 
     pub fn toJSON(&self) {
@@ -37,9 +36,8 @@ impl Superblock {
 
         println!("{}", serialized_block);
     }
-    pub fn fromJSON(&self, source: String) -> Superblock {
-       
 
+    pub fn fromJSON(&self, source: String) -> Superblock {
         let superblock: Superblock = serde_json::from_str(&source).unwrap();
         return superblock;
     }

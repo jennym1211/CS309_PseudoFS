@@ -41,9 +41,7 @@ impl Directory {
     }
 
     /*
-
         Returns a vec of all the files in the directory, sorted.
-
     */
     pub fn getContents(&self) -> Vec<String> {
         let mut names: Vec<String> = Vec::new();
@@ -52,10 +50,9 @@ impl Directory {
         // do for loop
         return names;
     }
+
     /*
-
        Adds a file to the directory
-
     */
     pub fn add(&mut self, inode_num: u32, name: String) -> bool {
         if inode_num > 0 {

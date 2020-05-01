@@ -65,7 +65,8 @@ impl FileSystem {
         let mut total_inodes: u32 = 0;
         let mut free_blocks_vec: Vec<Block> = Vec::new();
         let mut inodes_vec: Vec<Inode> = Vec::new();
-        let mut super_block = Superblock::new(magic_number, total_blocks, free_blocks_vec,inodes_vec);
+        let mut super_block =
+            Superblock::new(magic_number, total_blocks, free_blocks_vec, inodes_vec);
 
         return true;
     }
@@ -114,8 +115,6 @@ impl FileSystem {
     }
 
     pub fn fromJSON(source: String) -> FileSystem {
-        
-
         let filesystem: FileSystem = serde_json::from_str(&source).unwrap();
         return filesystem;
     }
