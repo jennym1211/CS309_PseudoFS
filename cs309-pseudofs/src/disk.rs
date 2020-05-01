@@ -23,11 +23,15 @@ impl Disk {
         https://www.rosettacode.org/wiki/Read_a_specific_line_from_a_file#Rust
     */
     pub fn open(&self, file_name: String) -> bool {
-        let path = Path::new(&file_name);
-        let line_num = 7usize;
-        let line = self.get_line_at(&path, line_num - 1);
-        println!("{}", line.unwrap());
-        return true;
+        if *self.is_mounted() == false {
+            let path = Path::new(&file_name);
+            let line_num = 7usize;
+            let line = self.get_line_at(&path, line_num - 1);
+            println!("{}", line.unwrap());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     pub fn get_line_at(&self, path: &Path, line_num: usize) -> Result<String, Error> {
@@ -38,7 +42,7 @@ impl Disk {
     }
 
     pub fn close(disk: &mut Disk) -> bool {
-        if *disk.is_mounted() {
+        if *disk.is_mounted() == true {
             println!("Finishing writing jobs and closing disk image...");
             //disk.write(block.blockID, block.);
             println!("Unmounting disk image...");
