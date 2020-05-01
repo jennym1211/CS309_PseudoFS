@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::io::BufWriter;
+use std::io::Error;
 use std::path::Path;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -17,14 +18,36 @@ pub struct Disk {
 
 //Disk emulator functions
 impl Disk {
+    /*
+        Got help from link below with opening and counting lines in a file:
+        https://www.rosettacode.org/wiki/Read_a_specific_line_from_a_file#Rust
+    */
     pub fn open(&self, file_name: String) -> bool {
         let path = Path::new(&file_name);
-        //get line count
+        let line_num = 7usize;
+        let line = self.get_line_at(&path, line_num - 1);
+        println!("{}", line.unwrap());
         return true;
     }
 
+    pub fn get_line_at(&self, path: &Path, line_num: usize) -> Result<String, Error> {
+        let file = File::open(path).expect("File not found or cannot be opened");
+        let content = BufReader::new(&file);
+        let mut lines = content.lines();
+        lines.nth(line_num).expect("No line found at that position")
+    }
+
     pub fn close(disk: Disk) -> bool {
-        return true;
+        if *disk.is_mounted() {
+            println!("Finishing writing jobs and closing disk image...");
+            //disk.write(block.blockID, block.);
+            println!("Unmounting disk image...");
+            disk.mounted == false;
+            return true;
+        } else {
+            println!("Disk image already closed and unmounted...Please mount disk image...");
+            return false;
+        }
     }
 
     pub fn read(&self, blockID: u32) -> Block {
