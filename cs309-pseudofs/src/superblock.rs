@@ -38,9 +38,9 @@ impl Superblock {
         println!("{}", serialized_block);
     }
     pub fn fromJSON(&self, source: String) -> Superblock {
-        let json_string = "{\"magic_number\":0x70736575646F4653,\"total_blocks\":\"temp\",\"free_blocks\":\"temp\",\"total_inodes\":temp,\"free_inodes\":temp}}";
+       
 
-        let superblock: Superblock = serde_json::from_str(&json_string).unwrap();
+        let superblock: Superblock = serde_json::from_str(&source).unwrap();
         return superblock;
     }
 }

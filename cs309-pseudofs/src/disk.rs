@@ -126,9 +126,6 @@ pub mod block {
 
             Return a block object from JSON string
 
-
-            TO DO: fix json_string
-
         */
         pub fn fromJSON(source: String) -> Block {
             let block: Block = serde_json::from_str(&source).unwrap();

@@ -114,9 +114,9 @@ impl FileSystem {
     }
 
     pub fn fromJSON(source: String) -> FileSystem {
-        let json_string = "{\"disk\":temp,\"superblock\":\"temp\",\"directory\":\"temp\",\"inodes\":temp,\"inodes_per_block\":temp,\"mounted\":true}}";
+        
 
-        let filesystem: FileSystem = serde_json::from_str(&json_string).unwrap();
+        let filesystem: FileSystem = serde_json::from_str(&source).unwrap();
         return filesystem;
     }
 }
