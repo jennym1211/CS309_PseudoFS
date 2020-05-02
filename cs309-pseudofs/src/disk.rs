@@ -47,9 +47,9 @@ impl Disk {
         if *disk.is_mounted() == true {
             println!("Finishing writing jobs and closing disk image...");
 
-            //let mut data = self.disk_content;
-            //let mut f = File::create("/tmp/foo").expect("Unable to create file");
-            //f.write_all(data.as_bytes()).expect("Unable to write data");
+            let mut data = self.disk_content.clone();
+            let mut f = File::create("/tmp/foo").expect("Unable to create file");
+            //f.write_all(data.into_bytes()).expect("Unable to write data");
 
             println!("Unmounting disk image...");
             disk.mounted = false;
