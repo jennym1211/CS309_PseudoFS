@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
-use std::io::BufWriter;
 use std::io::Error;
 use std::path::Path;
 
@@ -32,7 +31,7 @@ impl Disk {
             println!("Disk image loaded and ready to run...");
             return true;
         } else {
-            println!("Disk image unmounted...Please mount image file...");
+            eprintln!("Disk image unmounted...Please mount image file...");
             return false;
         }
     }
@@ -44,15 +43,19 @@ impl Disk {
         lines.nth(line_num).expect("No line found at that position")
     }
 
-    pub fn close(disk: &mut Disk) -> bool {
+    pub fn close(&self, disk: &mut Disk) -> bool {
         if *disk.is_mounted() == true {
             println!("Finishing writing jobs and closing disk image...");
-            //disk.write(block.blockID, block.);
+
+            //let mut data = self.disk_content;
+            //let mut f = File::create("/tmp/foo").expect("Unable to create file");
+            //f.write_all(data.as_bytes()).expect("Unable to write data");
+
             println!("Unmounting disk image...");
             disk.mounted = false;
             return true;
         } else {
-            println!("Disk image already closed and unmounted...Please mount disk image...");
+            eprintln!("Disk image already closed and unmounted...Please mount disk image...");
             return false;
         }
     }
@@ -64,7 +67,7 @@ impl Disk {
         return block;
     }
 
-    pub fn write(&mut self, blockID: u32, mut block: Block) -> bool {
+    pub fn write(&mut self, mut block: Block) -> bool {
         if block.get_blockid() >= &0
             && block.get_blockid() < &(self.disk_content.len() as u32)
             && *self.is_mounted() == true
@@ -101,7 +104,7 @@ pub mod block {
     #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
     pub struct Block {
         pub blockID: u32,
-        pub nextNode: u32,
+        pub nextNode: i32,
         pub data: String,
     }
 
@@ -113,7 +116,7 @@ pub mod block {
                 data: String::from(""),
             }
         }
-        pub fn new(blockID: u32, nextNode: u32, data: String) -> Block {
+        pub fn new(blockID: u32, nextNode: i32, data: String) -> Block {
             Block {
                 blockID: blockID,
                 nextNode: nextNode,
@@ -126,7 +129,7 @@ pub mod block {
             return &self.blockID;
         }
 
-        pub fn get_next_node(&self) -> &u32 {
+        pub fn get_next_node(&self) -> &i32 {
             return &self.nextNode;
         }
 
@@ -139,7 +142,7 @@ pub mod block {
             &mut self.blockID
         }
 
-        fn set_nextNode(&mut self) -> &mut u32 {
+        fn set_nextNode(&mut self) -> &mut i32 {
             &mut self.nextNode
         }
 
@@ -150,9 +153,9 @@ pub mod block {
         /*
             Serialize disk to a JSON string
         */
-        pub fn toJSON(&mut self) {
+        pub fn toJSON(&mut self) -> String {
             let serialized_block = serde_json::to_string(&self).unwrap();
-            println!("{}", serialized_block);
+            return String::from(serialized_block);
         }
 
         /*

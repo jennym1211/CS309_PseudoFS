@@ -5,7 +5,7 @@ use std::time::SystemTime;
 pub struct Inode {
     pub inode_num: u32,
     pub inode_type: InodeType,
-    pub start_block: u32,
+    pub start_block: i32,
     pub size: u32,
     pub c_time: DateTime<Utc>, //find a date/time datastruct idk
 }
@@ -20,11 +20,11 @@ pub enum InodeType {
 
 impl Inode {
     pub fn new(
-        inode_num: u32,
-        inode_type: InodeType,
-        start_block: u32,
-        size: u32,
-        c_time: DateTime<Utc>,
+        mut inode_num: u32,
+        mut inode_type: InodeType,
+        mut start_block: i32,
+        mut size: u32,
+        mut c_time: DateTime<Utc>,
     ) -> Inode {
         Inode {
             inode_num: inode_num,
@@ -43,7 +43,7 @@ impl Inode {
         return &self.inode_type;
     }
 
-    pub fn get_start_block(&self) -> &u32 {
+    pub fn get_start_block(&self) -> &i32 {
         return &self.start_block;
     }
 
@@ -64,7 +64,7 @@ impl Inode {
         &mut self.inode_type
     }
 
-    fn set_startblock(&mut self) -> &mut u32 {
+    fn set_startblock(&mut self) -> &mut i32 {
         &mut self.start_block
     }
 
@@ -75,10 +75,10 @@ impl Inode {
         &mut self.c_time
     }
 
-    pub fn toJSON(&self) {
+    pub fn toJSON(&self) -> String {
         let serialized_block = serde_json::to_string(&self).unwrap();
 
-        println!("{}", serialized_block);
+        return String::from(serialized_block);
     }
 
     pub fn fromJSON(source: String) -> Inode {

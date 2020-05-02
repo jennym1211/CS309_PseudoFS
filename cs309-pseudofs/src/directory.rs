@@ -30,6 +30,11 @@ impl Directory {
         return directory;
     }
 
+    pub fn get_inode_num(&self, name: String) -> u32 {
+        let mut inode_num: u32 = *self.directory_contents.get(&name).unwrap();
+        return inode_num;
+    }
+
     pub fn remove(&mut self, name: String) {
         if !name.eq("/") || name.eq(".") || name.eq("..")
         //cannot remove root
@@ -62,10 +67,10 @@ impl Directory {
         return false;
     }
 
-    pub fn toJSON(&self) {
+    pub fn toJSON(&self) -> String {
         let serialized_block = serde_json::to_string(&self).unwrap();
 
-        println!("{}", serialized_block);
+        return String::from(serialized_block);
     }
 
     pub fn fromJSON(source: String) -> Directory {
