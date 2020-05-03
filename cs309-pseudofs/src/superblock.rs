@@ -59,6 +59,14 @@ impl Superblock {
         }
     }
 
+    pub fn set_magicNumber(&mut self, magic_number: String) -> &mut String {
+        &mut self.magic_number
+    }
+
+    pub fn set_blockCount(&mut self, block_count: i32) -> &mut i32 {
+        &mut self.total_blocks
+    }
+
     pub fn setInodes(&mut self, newInodes: Vec<Inode>) {
         self.inodes_vec = Vec::with_capacity(newInodes.len());
         self.free_inodes.clear();

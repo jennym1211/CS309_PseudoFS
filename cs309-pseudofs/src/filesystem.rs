@@ -1,16 +1,18 @@
 use crate::directory::Directory;
 use crate::disk::block::Block;
 use crate::disk::Disk;
-use crate::inode::Inode;
-use crate::inode::InodeType;
+use crate::inode::{Inode, InodeType, Inodes};
 use crate::superblock::Superblock;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::fs::File;
+use std::fs::{self, File};
+use std::io::prelude::*;
+use std::io::LineWriter;
 use std::path::Path;
 
 const INODES_PER_BLOCK: i32 = 50;
 const NEG_ONE: i32 = -1;
+const NEG_TWO: i32 = -2;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct FileSystem {
@@ -64,32 +66,85 @@ impl FileSystem {
         }
     }
 
-    pub fn create(fileName: String) -> bool {
-        let mut file = File::create(fileName);
-
-        return false;
+    pub fn create(fileName: String, sizeInKB: usize) -> std::io::Result<()> {
+        let mut file = File::create(fileName)?;
+        let mut lw = LineWriter::with_capacity(sizeInKB, file);
+        lw.write(b"\r\n");
+        Ok(())
     }
 
     pub fn format(&mut self, fileName: String) -> bool {
         let magic_number = String::from("0x70736575646F4653"); // 0x70736575646F4653 is always the magic number
-        let mut total_blocks: i32 = 0;
-        let mut total_inodes: i32 = 0;
-        let mut free_blocks_vec: Vec<Block> = Vec::new();
-        let mut inodes_vec: Vec<Inode> = Vec::new();
+        let mut total_blocks: usize = 0;
+        let mut total_inodes: usize = 0;
         let mut super_block = Superblock::default();
         let inode_block = 1;
 
         let line_num = 7usize;
 
         let path = Path::new(&fileName);
+        total_blocks = path.iter().count();
+        total_inodes = total_blocks / 10;
+
+        self.inodes = Vec::with_capacity(total_blocks);
+
+        self.disk.open(fileName);
 
         //Create the inodes
         for i in 0..self.inodes.len() {
             self.inodes
                 .push(Inode::new(i as i32, InodeType::Free, -1, 0, Utc::now()));
         }
+        let mut rootBlockID = (total_inodes / INODES_PER_BLOCK as usize) + 1;
 
-        return true;
+        self.inodes[0].set_inodetype(InodeType::Directory);
+        self.inodes[0].set_startblock(rootBlockID as i32);
+        self.inodes[0].set_size(0);
+
+        super_block.set_magicNumber(magic_number);
+        super_block.set_blockCount(total_blocks as i32);
+        super_block.setInodes(self.inodes.clone());
+
+        self.disk.write(Block::new(0, -1, super_block.toJSON()));
+
+        let mut start = 0;
+        let mut end = INODES_PER_BLOCK;
+
+        while inode_block != rootBlockID {
+            let mut inode_block_increment = inode_block + 1;
+
+            let mut temp: Vec<Inode> = Vec::new();
+
+            temp.clone_from_slice(&self.inodes[start..end as usize]);
+            let mut inode_collection: Inodes = Inodes::new_of_vec(temp);
+
+            let mut iblock: Block = Block::new(
+                inode_block_increment as i32,
+                inode_block as i32,
+                inode_collection.clone().toJSON(),
+            );
+
+            if inode_block == rootBlockID {
+                iblock.set_nextNode(-1);
+            }
+            self.disk.write(iblock);
+            start = end as usize;
+            end = end + INODES_PER_BLOCK;
+            if end > self.inodes.len().clone() as i32 {
+                end = self.inodes.len() as i32;
+            }
+        }
+
+        let mut rootBlock = Block::new(rootBlockID as i32, -1, self.root.toJSON());
+        self.disk.write(rootBlock);
+
+        for i in 0..self.superblock.get_totalblocks() {
+            let i: i32 = rootBlockID as i32;
+            let mut blank: Block = Block::new(i, -2, "".to_string());
+            self.disk.write(blank);
+        }
+
+        return self.disk.close();
     }
 
     pub fn mount(&mut self, file_name: String) -> bool {
@@ -98,13 +153,43 @@ impl FileSystem {
             self.superblock
                 .fromJSON(self.disk.read(0).get_data().to_string());
 
-            //self.inodes =
+            let mut div_10 = self.superblock.get_totalblocks() / 10;
 
+            self.inodes = Vec::with_capacity(div_10);
             let mut inode_block_num = 1;
-            let mut current_node = 0;
+            let mut current_inode = 0;
+
+            while inode_block_num != -1 {
+                let inodeBlock: Block = self.disk.read(inode_block_num);
+                inode_block_num = inodeBlock.get_next_node().clone();
+                let inode_collection: Inodes = Inodes::fromJSON(inodeBlock.get_data().to_string());
+
+                let mut temp: Vec<Inode> = inode_collection.get_inodes();
+
+                for i in 0..inode_collection.get_inodes().len() {
+                    self.inodes[current_inode] = temp[i].clone();
+                    current_inode = current_inode + 1;
+                }
+            }
+
+            let mut rootBlock = self.inodes[0].get_start_block();
+            self.root =
+                Directory::fromJSON(self.disk.read(rootBlock.clone()).get_data().to_string());
+
+            self.superblock.setInodes(self.inodes.clone());
+
+            let i = 2;
+
+            for i in 0..self.superblock.get_totalblocks() {
+                let blk: Block = self.disk.read(i as i32);
+                if blk.get_next_node().clone() == NEG_TWO {
+                    self.superblock.put_free_block(blk);
+                }
+            }
+            self.mounted = true;
         }
 
-        return true;
+        return self.mounted;
     }
 
     pub fn sync(&mut self) {

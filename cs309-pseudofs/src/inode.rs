@@ -11,6 +11,11 @@ pub struct Inode {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub struct Inodes {
+    pub inodes: Vec<Inode>,
+}
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum InodeType {
     Free,
     File,
@@ -95,5 +100,56 @@ impl Inode {
     pub fn fromJSON(source: String) -> Inode {
         let inode: Inode = serde_json::from_str(&source).unwrap();
         return inode;
+    }
+}
+
+impl Inodes {
+    pub fn new(&mut self, size: usize) -> Inodes {
+        let mut inodes: Vec<Inode> = Vec::with_capacity(size);
+        Inodes { inodes: inodes }
+    }
+
+    pub fn default() -> Inodes {
+        let mut inodes: Vec<Inode> = Vec::new();
+
+        Inodes { inodes: inodes }
+    }
+
+    pub fn new_of_vec(newInodes: Vec<Inode>) -> Inodes {
+        let mut inodes: Vec<Inode> = Vec::with_capacity(newInodes.len());
+
+        for i in 0..newInodes.len() {
+            inodes.push(newInodes[i].clone());
+        }
+
+        Inodes { inodes: inodes }
+    }
+
+    pub fn get_inodes(&self) -> Vec<Inode> {
+        let mut inodesCopy: Vec<Inode> = Vec::with_capacity(self.inodes.len().clone());
+
+        for i in 0..self.inodes.len() {
+            inodesCopy.push(self.inodes[i].clone());
+        }
+
+        return inodesCopy;
+    }
+
+    pub fn setInodes(&mut self, newInodes: Vec<Inode>) {
+        self.inodes = Vec::with_capacity(newInodes.len());
+        for i in 0..newInodes.len() {
+            self.inodes.push(newInodes[i].clone());
+        }
+    }
+
+    pub fn toJSON(&self) -> String {
+        let serialized_block = serde_json::to_string(&self).unwrap();
+
+        return String::from(serialized_block);
+    }
+
+    pub fn fromJSON(source: String) -> Inodes {
+        let inodes: Inodes = serde_json::from_str(&source).unwrap();
+        return inodes;
     }
 }
