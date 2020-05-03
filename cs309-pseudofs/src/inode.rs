@@ -91,13 +91,13 @@ impl Inode {
         &mut self.c_time
     }
 
-    pub fn toJSON(&self) -> String {
+    pub fn to_json(&self) -> String {
         let serialized_block = serde_json::to_string(&self).unwrap();
 
         return String::from(serialized_block);
     }
 
-    pub fn fromJSON(source: String) -> Inode {
+    pub fn from_json(source: String) -> Inode {
         let inode: Inode = serde_json::from_str(&source).unwrap();
         return inode;
     }
@@ -142,13 +142,13 @@ impl Inodes {
         }
     }
 
-    pub fn toJSON(&self) -> String {
+    pub fn to_json(&self) -> String {
         let serialized_block = serde_json::to_string(&self).unwrap();
 
         return String::from(serialized_block);
     }
 
-    pub fn fromJSON(source: String) -> Inodes {
+    pub fn from_json(source: String) -> Inodes {
         let inodes: Inodes = serde_json::from_str(&source).unwrap();
         return inodes;
     }

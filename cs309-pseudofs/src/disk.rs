@@ -76,7 +76,7 @@ impl Disk {
     pub fn read(&mut self, blockID: i32) -> Block {
         self.reads = self.reads + 1;
         let mut block = Block::default();
-        block.fromJSON(self.disk_content[blockID as usize].to_string());
+        block.from_json(self.disk_content[blockID as usize].to_string());
         return block;
     }
 
@@ -86,7 +86,7 @@ impl Disk {
             && *self.is_mounted() == true
         {
             self.writes = self.writes + 1;
-            //self.disk_content[*block.get_blockid() as usize] = block.toJSON();
+            //self.disk_content[*block.get_blockid() as usize] = block.to_json();
             return true;
         } else {
             return false;
@@ -166,7 +166,7 @@ pub mod block {
         /*
             Serialize disk to a JSON string
         */
-        pub fn toJSON(&mut self) -> String {
+        pub fn to_json(&mut self) -> String {
             let serialized_block = serde_json::to_string(&self).unwrap();
             return String::from(serialized_block);
         }
@@ -174,7 +174,7 @@ pub mod block {
         /*
             Return a block object from JSON string
         */
-        pub fn fromJSON(&mut self, source: String) -> Block {
+        pub fn from_json(&mut self, source: String) -> Block {
             let block: Block = serde_json::from_str(&source).unwrap();
             return block;
         }

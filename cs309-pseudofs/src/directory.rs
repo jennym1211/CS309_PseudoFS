@@ -71,13 +71,13 @@ impl Directory {
         return false;
     }
 
-    pub fn toJSON(&self) -> String {
+    pub fn to_json(&self) -> String {
         let serialized_block = serde_json::to_string(&self).unwrap();
 
         return String::from(serialized_block);
     }
 
-    pub fn fromJSON(source: String) -> Directory {
+    pub fn from_json(source: String) -> Directory {
         let directory: Directory = serde_json::from_str(&source).unwrap();
         return directory;
     }

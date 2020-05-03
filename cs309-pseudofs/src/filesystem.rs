@@ -24,6 +24,21 @@ pub struct FileSystem {
 }
 
 impl FileSystem {
+    pub fn default() -> FileSystem {
+        let mut disk = Disk::default();
+        let mut sb = Superblock::default();
+        let mut root = Directory::new();
+        let mut inodes: Vec<Inode> = Vec::new();
+        let mounted = false;
+
+        FileSystem {
+            disk: disk,
+            superblock: sb,
+            root: root,
+            inodes: inodes,
+            mounted: mounted,
+        }
+    }
     /**
      * Prints diagnostic and usage information about the mounted file system
      */
@@ -66,10 +81,10 @@ impl FileSystem {
         }
     }
 
-    pub fn create(fileName: String, sizeInKB: usize) -> std::io::Result<()> {
+    pub fn create_disk(&mut self, fileName: String, sizeInKB: usize) -> std::io::Result<()> {
         let mut file = File::create(fileName)?;
         let mut lw = LineWriter::with_capacity(sizeInKB, file);
-        lw.write(b"\r\n");
+        lw.write(b"\r\n").expect("Could not write to file.");
         Ok(())
     }
 
@@ -105,7 +120,7 @@ impl FileSystem {
         super_block.set_blockCount(total_blocks as i32);
         super_block.setInodes(self.inodes.clone());
 
-        self.disk.write(Block::new(0, -1, super_block.toJSON()));
+        self.disk.write(Block::new(0, -1, super_block.to_json()));
 
         let mut start = 0;
         let mut end = INODES_PER_BLOCK;
@@ -121,7 +136,7 @@ impl FileSystem {
             let mut iblock: Block = Block::new(
                 inode_block_increment as i32,
                 inode_block as i32,
-                inode_collection.clone().toJSON(),
+                inode_collection.clone().to_json(),
             );
 
             if inode_block == rootBlockID {
@@ -135,7 +150,7 @@ impl FileSystem {
             }
         }
 
-        let mut rootBlock = Block::new(rootBlockID as i32, -1, self.root.toJSON());
+        let mut rootBlock = Block::new(rootBlockID as i32, -1, self.root.to_json());
         self.disk.write(rootBlock);
 
         for i in 0..self.superblock.get_totalblocks() {
@@ -151,7 +166,7 @@ impl FileSystem {
         if *self.disk.is_mounted() == false && *self.is_mounted() == false {
             self.disk.open(file_name);
             self.superblock
-                .fromJSON(self.disk.read(0).get_data().to_string());
+                .from_json(self.disk.read(0).get_data().to_string());
 
             let mut div_10 = self.superblock.get_totalblocks() / 10;
 
@@ -162,7 +177,7 @@ impl FileSystem {
             while inode_block_num != -1 {
                 let inodeBlock: Block = self.disk.read(inode_block_num);
                 inode_block_num = inodeBlock.get_next_node().clone();
-                let inode_collection: Inodes = Inodes::fromJSON(inodeBlock.get_data().to_string());
+                let inode_collection: Inodes = Inodes::from_json(inodeBlock.get_data().to_string());
 
                 let mut temp: Vec<Inode> = inode_collection.get_inodes();
 
@@ -174,7 +189,7 @@ impl FileSystem {
 
             let mut rootBlock = self.inodes[0].get_start_block();
             self.root =
-                Directory::fromJSON(self.disk.read(rootBlock.clone()).get_data().to_string());
+                Directory::from_json(self.disk.read(rootBlock.clone()).get_data().to_string());
 
             self.superblock.setInodes(self.inodes.clone());
 
@@ -213,20 +228,20 @@ impl FileSystem {
         return true;
     }
 
-    pub fn getFileNameInode(&mut self, name: String) -> Inode {
+    pub fn get_file_name_inode(&mut self, name: String) -> Inode {
         let mut node = Inode::default();
 
         if self.root.get_inode_num(name.clone()) >= 0 {
-            node = self.readInode(self.root.get_inode_num(name));
+            node = self.read_inode(self.root.get_inode_num(name));
         }
         return node;
     }
 
-    pub fn readFile(&mut self, name: String) -> String {
+    pub fn read_file(&mut self, name: String) -> String {
         let mut processing: bool = true;
         let mut contents = String::from("");
-        let mut inode: Inode = self.readInode(self.root.get_inode_num(name));
-        let mut block: Block = self.readBlock(inode.get_start_block().clone()).clone();
+        let mut inode: Inode = self.read_inode(self.root.get_inode_num(name));
+        let mut block: Block = self.read_block(inode.get_start_block().clone()).clone();
 
         while processing {
             contents.push_str(&block.get_data().to_string());
@@ -234,19 +249,19 @@ impl FileSystem {
             if block.get_next_node() == &NEG_ONE {
                 processing = false
             } else {
-                block = self.readBlock(*block.get_next_node());
+                block = self.read_block(*block.get_next_node());
             }
         }
 
         return contents;
     }
 
-    pub fn writeFile(&mut self, name: String, contents: String) -> bool {
+    pub fn write_file(&mut self, name: String, contents: String) -> bool {
         let mut blocks: Vec<Block> = Vec::new();
         let mut start = 0;
         let mut end = 0;
 
-        let mut inode: Inode = self.getFileNameInode(name.clone()).clone();
+        let mut inode: Inode = self.get_file_name_inode(name.clone()).clone();
 
         if inode == Inode::default() {
             inode = self.superblock.get_free_inode();
@@ -255,7 +270,7 @@ impl FileSystem {
             self.root.add(inode.get_inodenum().clone(), name);
         } else {
             let mut processing: bool = true;
-            let mut block: Block = self.readBlock(inode.get_start_block().clone());
+            let mut block: Block = self.read_block(inode.get_start_block().clone());
 
             while processing {
                 if block.get_next_node().clone() == NEG_ONE {
@@ -263,7 +278,7 @@ impl FileSystem {
                 }
                 block.set_nextNode(-2);
                 block.set_data("".to_string());
-                self.writeBlock(block.clone());
+                self.write_block(block.clone());
                 self.superblock.put_free_block(block.clone());
             }
         }
@@ -302,13 +317,13 @@ impl FileSystem {
             }
         }
         for block_item in blocks.iter() {
-            self.writeBlock(block_item.clone());
+            self.write_block(block_item.clone());
         }
         self.sync();
         return true;
     }
 
-    pub fn deleteFile(&mut self, name: String) -> bool {
+    pub fn delete_file(&mut self, name: String) -> bool {
         let mut processing: bool = true;
         let mut inode =
             self.superblock.get_inodes()[self.root.get_inode_num(name.clone()) as usize].clone();
@@ -316,17 +331,17 @@ impl FileSystem {
             eprintln!("Cannot delete root directory!");
             return false;
         }
-        let mut block: Block = self.readBlock(inode.get_start_block().clone()).clone();
+        let mut block: Block = self.read_block(inode.get_start_block().clone()).clone();
         while processing {
             let mut nextNode = block.get_next_node().clone();
             block.set_nextNode(-2);
             block.set_data("".to_string());
-            self.writeBlock(block.clone());
+            self.write_block(block.clone());
 
             if nextNode.clone() == NEG_ONE {
                 processing = false;
             } else {
-                block = self.readBlock(nextNode.clone());
+                block = self.read_block(nextNode.clone());
             }
         }
         inode.set_size(0);
@@ -355,7 +370,7 @@ impl FileSystem {
     pub fn is_mounted(&self) -> &bool {
         return &self.mounted;
     }
-    pub fn readInode(&self, inode_number: i32) -> Inode {
+    pub fn read_inode(&self, inode_number: i32) -> Inode {
         if inode_number < 0 && inode_number > self.superblock.get_inodes().len() as i32 {
             panic!("Invalid inode number!");
         } else {
@@ -364,12 +379,12 @@ impl FileSystem {
     }
 
     pub fn write_cache(&mut self) {
-        let mut sb = Block::new(0, -1, self.superblock.toJSON());
+        let mut sb = Block::new(0, -1, self.superblock.to_json());
         self.disk.write(sb);
 
         let mut inodeBlock = 1;
         let mut rootBlockID = self
-            .readInode(self.root.get_inode_num("/".to_string()))
+            .read_inode(self.root.get_inode_num("/".to_string()))
             .get_start_block();
         let mut start = 0;
 
@@ -378,11 +393,11 @@ impl FileSystem {
         let mut temp: Vec<Inode> = Vec::new();
     }
 
-    pub fn writeInode(&mut self, inode_num: i32, updated_inode: Inode) -> bool {
+    pub fn write_inode(&mut self, inode_num: i32, updated_inode: Inode) -> bool {
         return true;
     }
 
-    pub fn readBlock(&mut self, blockID: i32) -> Block {
+    pub fn read_block(&mut self, blockID: i32) -> Block {
         let mut block = Block::default();
 
         if *self.disk.is_mounted() == true && *self.is_mounted() == true {
@@ -392,7 +407,7 @@ impl FileSystem {
         }
     }
 
-    pub fn writeBlock(&mut self, block: Block) -> bool {
+    pub fn write_block(&mut self, block: Block) -> bool {
         let mut result: bool = false;
         if *self.disk.is_mounted() == true && *self.is_mounted() == true {
             result = self.disk.write(block);
@@ -400,13 +415,13 @@ impl FileSystem {
         return result;
     }
 
-    pub fn toJSON(&self) -> String {
+    pub fn to_json(&self) -> String {
         let serialized_block = serde_json::to_string(&self).unwrap();
 
         return String::from(serialized_block);
     }
 
-    pub fn fromJSON(source: String) -> FileSystem {
+    pub fn from_json(source: String) -> FileSystem {
         let filesystem: FileSystem = serde_json::from_str(&source).unwrap();
         return filesystem;
     }
