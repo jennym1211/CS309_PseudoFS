@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Directory {
-    pub directory_contents: HashMap<String, u32>,
+    pub directory_contents: HashMap<String, i32>,
 }
 
 /*pub struct Directory {
@@ -15,7 +15,7 @@ pub struct Directory {
 
 impl Directory {
     pub fn new() -> Directory {
-        let mut contents: HashMap<String, u32> = HashMap::new();
+        let mut contents: HashMap<String, i32> = HashMap::new();
 
         contents.clear();
 
@@ -30,8 +30,8 @@ impl Directory {
         return directory;
     }
 
-    pub fn get_inode_num(&self, name: String) -> u32 {
-        let mut inode_num: u32 = *self.directory_contents.get(&name).unwrap();
+    pub fn get_inode_num(&self, name: String) -> i32 {
+        let mut inode_num: i32 = *self.directory_contents.get(&name).unwrap();
         return inode_num;
     }
 
@@ -52,14 +52,18 @@ impl Directory {
         let mut names: Vec<String> = Vec::new();
         let mut i = 0;
 
-        // do for loop
+        for (name, num) in &self.directory_contents {
+            names[i] = name.to_string();
+            i = i + 1;
+        }
+
         return names;
     }
 
     /*
        Adds a file to the directory
     */
-    pub fn add(&mut self, inode_num: u32, name: String) -> bool {
+    pub fn add(&mut self, inode_num: i32, name: String) -> bool {
         if inode_num > 0 {
             self.directory_contents.insert(name, inode_num);
             return true;

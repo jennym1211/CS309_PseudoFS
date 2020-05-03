@@ -3,10 +3,10 @@ use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Inode {
-    pub inode_num: u32,
+    pub inode_num: i32,
     pub inode_type: InodeType,
     pub start_block: i32,
-    pub size: u32,
+    pub size: i32,
     pub c_time: DateTime<Utc>, //find a date/time datastruct idk
 }
 
@@ -19,11 +19,22 @@ pub enum InodeType {
 }
 
 impl Inode {
+    pub fn default() -> Inode {
+        let mut c_time: DateTime<Utc> = Utc::now();
+        Inode {
+            inode_num: 0,
+            inode_type: InodeType::File,
+            start_block: 0,
+            size: 0,
+            c_time: c_time,
+        }
+    }
+
     pub fn new(
-        mut inode_num: u32,
+        mut inode_num: i32,
         mut inode_type: InodeType,
         mut start_block: i32,
-        mut size: u32,
+        mut size: i32,
         mut c_time: DateTime<Utc>,
     ) -> Inode {
         Inode {
@@ -35,7 +46,7 @@ impl Inode {
         }
     }
     //Getters
-    pub fn get_inodenum(&self) -> &u32 {
+    pub fn get_inodenum(&self) -> &i32 {
         return &self.inode_num;
     }
 
@@ -47,7 +58,7 @@ impl Inode {
         return &self.start_block;
     }
 
-    pub fn get_size(&self) -> &u32 {
+    pub fn get_size(&self) -> &i32 {
         return &self.size;
     }
 
@@ -56,22 +67,22 @@ impl Inode {
     }
 
     //Setters
-    fn set_inodenum(&mut self) -> &mut u32 {
+    pub fn set_inodenum(&mut self, inodeNum: i32) -> &mut i32 {
         &mut self.inode_num
     }
 
-    fn set_inodetype(&mut self) -> &mut InodeType {
+    pub fn set_inodetype(&mut self, inode_type: InodeType) -> &mut InodeType {
         &mut self.inode_type
     }
 
-    fn set_startblock(&mut self) -> &mut i32 {
+    pub fn set_startblock(&mut self, startBlock: i32) -> &mut i32 {
         &mut self.start_block
     }
 
-    fn set_size(&mut self) -> &mut u32 {
+    pub fn set_size(&mut self, size: i32) -> &mut i32 {
         &mut self.size
     }
-    fn set_cTime(&mut self) -> &mut DateTime<Utc> {
+    pub fn set_cTime(&mut self, c_time: DateTime<Utc>) -> &mut DateTime<Utc> {
         &mut self.c_time
     }
 

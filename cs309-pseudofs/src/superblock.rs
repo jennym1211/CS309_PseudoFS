@@ -8,8 +8,8 @@ const VALID_MAGIC_NUM: &str = "0x70736575646F4653"; //always the magic number fo
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Superblock {
     pub magic_number: String, // 0x70736575646F4653 magic number
-    pub total_blocks: u32,
-    pub total_inodes: u32,
+    pub total_blocks: i32,
+    pub total_inodes: i32,
     pub free_blocks: Vec<Block>,
     pub free_inodes: Vec<Inode>,
     pub inodes_vec: Vec<Inode>,
@@ -34,11 +34,11 @@ impl Superblock {
     pub fn new(
         &mut self,
         mut magic_number: String,
-        mut total_blocks: u32,
+        mut total_blocks: i32,
         mut free_blocks: Vec<Block>,
         mut inodes_vec: Vec<Inode>,
     ) -> Superblock {
-        let mut inode_vec_size = inodes_vec.len() as u32;
+        let mut inode_vec_size = inodes_vec.len() as i32;
         let mut free_inodes: Vec<Inode> = Vec::new();
 
         self.setInodes(self.inodes_vec.clone());

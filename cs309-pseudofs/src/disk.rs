@@ -9,7 +9,7 @@ use std::path::Path;
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Disk {
     pub disk_content: Vec<String>,
-    pub blocks: u32,
+    pub blocks: i32,
     pub reads: u128,
     pub writes: u128,
     pub mounted: bool,
@@ -17,6 +17,17 @@ pub struct Disk {
 
 //Disk emulator functions
 impl Disk {
+    pub fn default() -> Disk {
+        let disk_content: Vec<String> = Vec::new();
+        Disk {
+            disk_content: disk_content,
+            blocks: 0,
+            mounted: false,
+            reads: 0,
+            writes: 0,
+        }
+    }
+
     /*
         Got help from link below with opening and counting lines in a file:
         https://www.rosettacode.org/wiki/Read_a_specific_line_from_a_file#Rust
@@ -43,8 +54,8 @@ impl Disk {
         lines.nth(line_num).expect("No line found at that position")
     }
 
-    pub fn close(&self, disk: &mut Disk) -> bool {
-        if *disk.is_mounted() == true {
+    pub fn close(&mut self) -> bool {
+        if *self.is_mounted() == true {
             println!("Finishing writing jobs and closing disk image...");
 
             let mut data = self.disk_content.clone();
@@ -52,7 +63,7 @@ impl Disk {
             //f.write_all(data.into_bytes()).expect("Unable to write data");
 
             println!("Unmounting disk image...");
-            disk.mounted = false;
+            self.mounted = false;
             return true;
         } else {
             eprintln!("Disk image already closed and unmounted...Please mount disk image...");
@@ -60,7 +71,9 @@ impl Disk {
         }
     }
 
-    pub fn read(&mut self, blockID: u32) -> Block {
+    pub fn run(&self) {}
+
+    pub fn read(&mut self, blockID: i32) -> Block {
         self.reads = self.reads + 1;
         let mut block = Block::default();
         block.fromJSON(self.disk_content[blockID as usize].to_string());
@@ -69,7 +82,7 @@ impl Disk {
 
     pub fn write(&mut self, mut block: Block) -> bool {
         if block.get_blockid() >= &0
-            && block.get_blockid() < &(self.disk_content.len() as u32)
+            && block.get_blockid() < &(self.disk_content.len() as i32)
             && *self.is_mounted() == true
         {
             self.writes = self.writes + 1;
@@ -89,7 +102,7 @@ impl Disk {
         return &self.writes;
     }
 
-    pub fn get_blocks(&self) -> &u32 {
+    pub fn get_blocks(&self) -> &i32 {
         return &self.blocks;
     }
 
@@ -103,7 +116,7 @@ pub mod block {
 
     #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
     pub struct Block {
-        pub blockID: u32,
+        pub blockID: i32,
         pub nextNode: i32,
         pub data: String,
     }
@@ -116,7 +129,7 @@ pub mod block {
                 data: String::from(""),
             }
         }
-        pub fn new(blockID: u32, nextNode: i32, data: String) -> Block {
+        pub fn new(blockID: i32, nextNode: i32, data: String) -> Block {
             Block {
                 blockID: blockID,
                 nextNode: nextNode,
@@ -125,7 +138,7 @@ pub mod block {
         }
 
         //Getters
-        pub fn get_blockid(&self) -> &u32 {
+        pub fn get_blockid(&self) -> &i32 {
             return &self.blockID;
         }
 
@@ -138,15 +151,15 @@ pub mod block {
         }
 
         //Setters
-        fn set_blockID(&mut self) -> &mut u32 {
+        pub fn set_blockID(&mut self, blockID: i32) -> &mut i32 {
             &mut self.blockID
         }
 
-        fn set_nextNode(&mut self) -> &mut i32 {
+        pub fn set_nextNode(&mut self, nextNode: i32) -> &mut i32 {
             &mut self.nextNode
         }
 
-        fn set_data(&mut self) -> &mut String {
+        pub fn set_data(&mut self, data: String) -> &mut String {
             &mut self.data
         }
 
