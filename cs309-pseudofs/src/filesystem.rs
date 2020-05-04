@@ -8,9 +8,9 @@ use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
 use std::io::prelude::*;
 use std::io::LineWriter;
+use std::io::{BufWriter, Write};
 use std::path::Path;
 use std::path::PathBuf;
-use std::io::{BufWriter, Write};
 const INODES_PER_BLOCK: i32 = 50;
 const NEG_ONE: i32 = -1;
 const NEG_TWO: i32 = -2;
@@ -83,27 +83,21 @@ impl FileSystem {
     }
 
     pub fn create_disk(&mut self, mut fileName: String, sizeInKB: usize) -> bool {
-        
-        
-       // let mut path = PathBuf::new();
+        // let mut path = PathBuf::new();
         //path.join(fileName.clone());
         let mut file = File::create("./disks/disk2.disk").expect("Could not create disk.");
 
-        
         //self.disk.diskName = path.into_os_string().into_string().unwrap();
 
         //let mut lw = LineWriter::with_capacity(sizeInKB, file);
         //lw.write(b"\r\n").expect("Could not write to file.");
         //let mut bw = BufWriter::new(file);
-       
-        for i in 0..sizeInKB
-        {
-            
-            let newline = "\r\n";
-            file.write(newline.as_bytes()).expect("Could not write to file.");
 
+        for i in 0..sizeInKB {
+            let newline = "\r\n";
+            file.write(newline.as_bytes())
+                .expect("Could not write to file.");
         }
-      
         return true;
     }
 
@@ -131,11 +125,12 @@ impl FileSystem {
         }
         let mut rootBlockID = (total_inodes / INODES_PER_BLOCK as usize) + 1;
 
+        print!("Inodes: {:?}", self.inodes);
 
-        print!("Inodes: {:?}",self.inodes);
-
-
-        self.inodes.first_mut().unwrap().set_inodetype(InodeType::Directory);
+        self.inodes
+            .first_mut()
+            .unwrap()
+            .set_inodetype(InodeType::Directory);
         self.inodes[0].set_startblock(rootBlockID as i32);
         self.inodes[0].set_size(0);
 
@@ -186,9 +181,10 @@ impl FileSystem {
     }
 
     pub fn mount(&mut self, file_name: String) -> bool {
-
         if *self.disk.is_mounted() == false && *self.is_mounted() == false {
-            self.disk.open(file_name).expect("Could not open disk image.");
+            self.disk
+                .open(file_name)
+                .expect("Could not open disk image.");
             self.superblock = Superblock::from_json(self.disk.read(0).get_data().to_string());
 
             let mut div_10 = self.superblock.get_totalblocks() / 10;

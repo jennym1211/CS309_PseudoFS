@@ -41,7 +41,6 @@ impl Disk {
             let mut path = Path::new(&file_name);
             let line_num = 7usize;
             //let line = self.get_line_at(&path, line_num - 1);
-           
             //println!("{}", line.unwrap());
 
             //self.disk_content = Vec::with_capacity(line);
@@ -50,27 +49,23 @@ impl Disk {
             let mut f = File::open(file_name.clone())?;
             let mut br = BufReader::new(f);
 
-            for i in br.lines()
-            {
+            for i in br.lines() {
                 self.disk_content.push(i?);
             }
             self.mounted = true;
-
 
             println!("Disk image loaded and ready to run...");
             Ok(())
         } else {
             panic!("Disk image unmounted...Please mount image file...");
-            
         }
     }
 
-    pub fn get_line_at(&self, path: &Path, line_num: usize) ->  Result<String, Error> {
+    pub fn get_line_at(&self, path: &Path, line_num: usize) -> Result<String, Error> {
         let file = File::open(path).expect("File not found or cannot be opened");
         let content = BufReader::new(&file);
         let mut lines = content.lines();
         lines.nth(line_num).expect("No line found at that position")
-        
     }
 
     pub fn close(&mut self) -> bool {
@@ -78,7 +73,7 @@ impl Disk {
             println!("Finishing writing jobs and closing disk image...");
 
             let mut payload = self.disk_content.clone();
-            let mut f = File::create("/tmp/foo").expect("Unable to create file");
+            let mut f = File::create("./disks/tmp/foo").expect("Unable to create file");
             //f.write_all(payload.into_bytes()).expect("Unable to write payload");
 
             println!("Unmounting disk image...");
@@ -91,15 +86,12 @@ impl Disk {
     }
 
     pub fn run(&mut self) -> std::io::Result<()> {
-       
         let mut file = File::open(self.diskName.clone())?;
 
-        for i in 0..self.disk_content.len()
-        {
+        for i in 0..self.disk_content.len() {
             self.writes = self.writes + 1;
             file.write(self.disk_content[i].clone().as_bytes())?;
             file.write("\n".as_bytes());
-           
         }
         file.flush();
         Ok(())
@@ -111,13 +103,11 @@ impl Disk {
         return block;
     }
 
-    pub fn read_superblock(&mut self) -> Block
-    {
+    pub fn read_superblock(&mut self) -> Block {
         //self.reads = self.reads + 1;
         let data_to_deserialize_ = r#"{"blockID":0,"nextNode":-1,"payload":"{\"magicNumber\":12345,\"blockCount\":1000,\"inodeCount\":100}"#;
         let block: Block = serde_json::from_str(&data_to_deserialize_).unwrap();
         return block;
-
     }
 
     pub fn write(&mut self, mut block: Block) -> bool {
@@ -219,14 +209,11 @@ pub mod block {
             return block;
         }
 
-
-        pub fn read_superblock(&mut self) -> Block
-        {
+        pub fn read_superblock(&mut self) -> Block {
             //self.reads = self.reads + 1;
             let data_to_deserialize_ = r#"{"blockID":0,"nextNode":-1,"payload":"{\"magicNumber\":12345,\"blockCount\":1000,\"inodeCount\":100}"#;
             let block: Block = serde_json::from_str(&data_to_deserialize_).unwrap();
             return block;
-    
         }
     }
 }

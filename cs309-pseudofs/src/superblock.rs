@@ -146,10 +146,8 @@ impl Superblock {
         let serialized_block = serde_json::to_string(&self).unwrap();
         return String::from(serialized_block);
     }
-  
     pub fn from_json(source: String) -> Superblock {
         let superblock: Superblock = serde_json::from_str(&source).unwrap();
         return superblock;
     }
 }
-

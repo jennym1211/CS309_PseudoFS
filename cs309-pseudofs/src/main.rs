@@ -38,13 +38,11 @@ fn main() {
         print!("> ");
         stdout().flush().unwrap();
 
-      
         let mut input = String::new();
         let mut stringContents = String::new();
         stdin().read_line(&mut input).unwrap();
         let mut file_name_input = String::new();
         let size = 1024;
-    
 
         // read_line leaves a trailing newline, which trim removes
         // this needs to be peekable so we can determine when we are on the last command
@@ -56,26 +54,18 @@ fn main() {
             let args = parts;
 
             match command {
-
-                
-                
                 "create" => {
                     println!("Enter the disk image name.");
                     let mut path_name = "cs309-pseudofs/disks/disk2.disk";
                     path_name.trim_matches(&['\n', '\r'] as &[_]);
 
-
-
-                    println!("{:?}", path_name.to_string());    
+                    println!("{:?}", path_name.to_string());
                     fs.create_disk(path_name.to_string(), size);
-                      
                 }
                 "format" => {
                     println!("Enter the disk image name.");
-             
-                    let mut path_name = "./disks/disk2.disk";
+                    let mut path_name = "./disks/disk.disk";
                     path_name.trim_matches(&['\n', '\r'] as &[_]);
-
 
                     if fs.format(path_name.to_string()) {
                         println!("Formatting successful!");
@@ -85,14 +75,10 @@ fn main() {
                     break;
                 }
                 "mount" => {
-
                     let mut path_name = "./disks/disk.disk";
                     path_name.trim_matches(&['\n', '\r'] as &[_]);
 
-
                     print!("{:?}", path_name.to_string());
-                    
-                    
                     if fs.mount(path_name.to_string()) {
                         println!("Mounting successful!");
                     } else {
