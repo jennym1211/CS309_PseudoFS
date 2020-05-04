@@ -2,18 +2,18 @@ use crate::inode::Inode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/**
+ *  A directory structure that holds a hashmap to hold the string of the path name, and the key value.
+ */
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Directory {
     pub directory_contents: HashMap<String, i32>,
 }
 
-/*pub struct Directory {
-    pub name: String,
-    pub inode: Inode,
-    pub file_name: String,
-}*/
-
 impl Directory {
+    /**
+     * Returns a new directory object with specified parameters.
+     */
     pub fn new() -> Directory {
         let mut contents: HashMap<String, i32> = HashMap::new();
 
@@ -31,7 +31,7 @@ impl Directory {
     }
 
     pub fn get_inode_num(&self, name: String) -> i32 {
-        let mut inode_num: i32 = *self.directory_contents.get(&name).unwrap();
+        let mut inode_num: i32 = 0;
         return inode_num;
     }
 
@@ -42,6 +42,13 @@ impl Directory {
             self.directory_contents.remove(&name);
         } else {
             println!("Cannot remove this directory!");
+        }
+    }
+
+    pub fn list(&mut self) {
+        println!("Current directory contents: ");
+        for (name, value) in &self.directory_contents {
+            println!("{}", name);
         }
     }
 

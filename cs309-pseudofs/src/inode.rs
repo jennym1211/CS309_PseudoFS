@@ -1,6 +1,10 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
+
+/**
+ * Data structure that reprents an inode.
+ */
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Inode {
     pub inode_num: i32,
@@ -10,11 +14,17 @@ pub struct Inode {
     pub c_time: DateTime<Utc>, //find a date/time datastruct idk
 }
 
+/**
+ *  Vec of inodes data structure.
+ */
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Inodes {
     pub inodes: Vec<Inode>,
 }
 
+/**
+ *  Enums for inode types that exist on a file system.
+ */
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum InodeType {
     Free,
@@ -24,6 +34,7 @@ pub enum InodeType {
 }
 
 impl Inode {
+    //Default object creation for a inode
     pub fn default() -> Inode {
         let mut c_time: DateTime<Utc> = Utc::now();
         Inode {
@@ -35,6 +46,9 @@ impl Inode {
         }
     }
 
+    /**
+     * Returns a new inode object with specified parameters.
+     */
     pub fn new(
         mut inode_num: i32,
         mut inode_type: InodeType,
@@ -104,22 +118,31 @@ impl Inode {
 }
 
 impl Inodes {
+    /**
+     * Returns a new inode vec array with specified parameters based on size.
+     */
     pub fn new(&mut self, size: usize) -> Inodes {
         let mut inodes: Vec<Inode> = Vec::with_capacity(size);
         Inodes { inodes: inodes }
     }
 
+    /**
+     * Returns a default inode vec.
+     */
     pub fn default() -> Inodes {
         let mut inodes: Vec<Inode> = Vec::new();
 
         Inodes { inodes: inodes }
     }
 
-    pub fn new_of_vec(newInodes: Vec<Inode>) -> Inodes {
-        let mut inodes: Vec<Inode> = Vec::with_capacity(newInodes.len());
+    /**
+     * Returns a new inode vec with a copy of another inode vec.
+     */
+    pub fn new_of_vec(new_inodes: Vec<Inode>) -> Inodes {
+        let mut inodes: Vec<Inode> = Vec::with_capacity(new_inodes.len());
 
-        for i in 0..newInodes.len() {
-            inodes.push(newInodes[i].clone());
+        for i in 0..new_inodes.len() {
+            inodes.push(new_inodes[i].clone());
         }
 
         Inodes { inodes: inodes }
@@ -135,10 +158,10 @@ impl Inodes {
         return inodesCopy;
     }
 
-    pub fn setInodes(&mut self, newInodes: Vec<Inode>) {
-        self.inodes = Vec::with_capacity(newInodes.len());
-        for i in 0..newInodes.len() {
-            self.inodes.push(newInodes[i].clone());
+    pub fn setInodes(&mut self, new_inodes: Vec<Inode>) {
+        self.inodes = Vec::with_capacity(new_inodes.len());
+        for i in 0..new_inodes.len() {
+            self.inodes.push(new_inodes[i].clone());
         }
     }
 

@@ -5,6 +5,9 @@ use serde::{Deserialize, Serialize};
 
 const VALID_MAGIC_NUM: &str = "0x70736575646F4653"; //always the magic number for pseudo FS
 
+/**
+ *  Data structure that represents a superblock on the OS.
+ */
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Superblock {
     pub magic_number: String, // 0x70736575646F4653 magic number
@@ -16,12 +19,15 @@ pub struct Superblock {
 }
 
 impl Superblock {
+    /**
+     * Returns a new default superblock object.
+     */
     pub fn default() -> Superblock {
-        let mut inodes_vec: Vec<Inode> = Vec::new();
-        let mut free_blocks: Vec<Block> = Vec::new();
-        let mut free_inodes: Vec<Inode> = Vec::new();
-        let mut total_inodes = 0;
-        let mut total_blocks = 0;
+        let inodes_vec: Vec<Inode> = Vec::new();
+        let free_blocks: Vec<Block> = Vec::new();
+        let free_inodes: Vec<Inode> = Vec::new();
+        let total_inodes = 0;
+        let total_blocks = 0;
 
         Superblock {
             magic_number: VALID_MAGIC_NUM.to_string(),
@@ -33,6 +39,9 @@ impl Superblock {
         }
     }
 
+    /**
+     * Returns a new superblock object with specified parameters.
+     */
     pub fn new(
         &mut self,
         mut magic_number: String,
@@ -43,7 +52,7 @@ impl Superblock {
         let mut inode_vec_size = inodes_vec.len() as i32;
         let mut free_inodes: Vec<Inode> = Vec::new();
 
-        self.setInodes(self.inodes_vec.clone());
+        self.set_inodes(self.inodes_vec.clone());
 
         if self.magic_number == VALID_MAGIC_NUM.to_string() {
             magic_number = VALID_MAGIC_NUM.to_string();
@@ -61,20 +70,20 @@ impl Superblock {
         }
     }
 
-    pub fn set_magicNumber(&mut self, magic_number: String) -> &mut String {
+    pub fn set_magic_number(&mut self, magic_number: String) -> &mut String {
         &mut self.magic_number
     }
 
-    pub fn set_blockCount(&mut self, block_count: i32) -> &mut i32 {
+    pub fn set_block_count(&mut self, block_count: i32) -> &mut i32 {
         &mut self.total_blocks
     }
 
-    pub fn setInodes(&mut self, newInodes: Vec<Inode>) {
-        self.inodes_vec = Vec::with_capacity(newInodes.len());
+    pub fn set_inodes(&mut self, new_inodes: Vec<Inode>) {
+        self.inodes_vec = Vec::with_capacity(new_inodes.len());
         self.free_inodes.clear();
 
         for i in 0..self.inodes_vec.len() {
-            self.inodes_vec.push(newInodes[i].clone());
+            self.inodes_vec.push(new_inodes[i].clone());
             if self.inodes_vec[i].inode_type == InodeType::Free {
                 self.put_free_inode(self.inodes_vec[i].clone());
             }
