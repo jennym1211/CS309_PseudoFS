@@ -20,14 +20,16 @@ impl Superblock {
         let mut inodes_vec: Vec<Inode> = Vec::new();
         let mut free_blocks: Vec<Block> = Vec::new();
         let mut free_inodes: Vec<Inode> = Vec::new();
+        let mut total_inodes = 0;
+        let mut total_blocks = 0;
 
         Superblock {
             magic_number: VALID_MAGIC_NUM.to_string(),
-            total_blocks: 0,
+            total_blocks: total_blocks,
             free_blocks: free_blocks,
             inodes_vec: inodes_vec,
             free_inodes: free_inodes,
-            total_inodes: 0,
+            total_inodes: total_inodes,
         }
     }
 
@@ -142,12 +144,12 @@ impl Superblock {
 
     pub fn to_json(&self) -> String {
         let serialized_block = serde_json::to_string(&self).unwrap();
-
         return String::from(serialized_block);
     }
-
-    pub fn from_json(&self, source: String) -> Superblock {
+  
+    pub fn from_json(source: String) -> Superblock {
         let superblock: Superblock = serde_json::from_str(&source).unwrap();
         return superblock;
     }
 }
+

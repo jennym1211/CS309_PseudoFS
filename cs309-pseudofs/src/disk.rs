@@ -8,6 +8,7 @@ use std::path::Path;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Disk {
+    pub diskName: String,
     pub disk_content: Vec<String>,
     pub blocks: i32,
     pub reads: u128,
@@ -18,8 +19,10 @@ pub struct Disk {
 //Disk emulator functions
 impl Disk {
     pub fn default() -> Disk {
-        let disk_content: Vec<String> = Vec::new();
+        let mut disk_content: Vec<String> = Vec::new();
+        let mut diskName = "";
         Disk {
+            diskName: "".to_string(),
             disk_content: disk_content,
             blocks: 0,
             mounted: false,
@@ -32,35 +35,51 @@ impl Disk {
         Got help from link below with opening and counting lines in a file:
         https://www.rosettacode.org/wiki/Read_a_specific_line_from_a_file#Rust
     */
-    pub fn open(&self, file_name: String) -> bool {
+    pub fn open(&mut self, file_name: String) -> std::io::Result<()> {
         if *self.is_mounted() == false {
             println!("Disk image loading...Reading files...");
-            let path = Path::new(&file_name);
+            let mut path = Path::new(&file_name);
             let line_num = 7usize;
-            let line = self.get_line_at(&path, line_num - 1);
-            println!("{}", line.unwrap());
+            //let line = self.get_line_at(&path, line_num - 1);
+           
+            //println!("{}", line.unwrap());
+
+            //self.disk_content = Vec::with_capacity(line);
+
+            //let mut file = File::create(file_name.clone())?;
+            let mut f = File::open(file_name.clone())?;
+            let mut br = BufReader::new(f);
+
+            for i in br.lines()
+            {
+                self.disk_content.push(i?);
+            }
+            self.mounted = true;
+
+
             println!("Disk image loaded and ready to run...");
-            return true;
+            Ok(())
         } else {
-            eprintln!("Disk image unmounted...Please mount image file...");
-            return false;
+            panic!("Disk image unmounted...Please mount image file...");
+            
         }
     }
 
-    pub fn get_line_at(&self, path: &Path, line_num: usize) -> Result<String, Error> {
+    pub fn get_line_at(&self, path: &Path, line_num: usize) ->  Result<String, Error> {
         let file = File::open(path).expect("File not found or cannot be opened");
         let content = BufReader::new(&file);
         let mut lines = content.lines();
         lines.nth(line_num).expect("No line found at that position")
+        
     }
 
     pub fn close(&mut self) -> bool {
         if *self.is_mounted() == true {
             println!("Finishing writing jobs and closing disk image...");
 
-            let mut data = self.disk_content.clone();
+            let mut payload = self.disk_content.clone();
             let mut f = File::create("/tmp/foo").expect("Unable to create file");
-            //f.write_all(data.into_bytes()).expect("Unable to write data");
+            //f.write_all(payload.into_bytes()).expect("Unable to write payload");
 
             println!("Unmounting disk image...");
             self.mounted = false;
@@ -71,13 +90,34 @@ impl Disk {
         }
     }
 
-    pub fn run(&self) {}
+    pub fn run(&mut self) -> std::io::Result<()> {
+       
+        let mut file = File::open(self.diskName.clone())?;
+
+        for i in 0..self.disk_content.len()
+        {
+            self.writes = self.writes + 1;
+            file.write(self.disk_content[i].clone().as_bytes())?;
+            file.write("\n".as_bytes());
+           
+        }
+        file.flush();
+        Ok(())
+    }
 
     pub fn read(&mut self, blockID: i32) -> Block {
         self.reads = self.reads + 1;
-        let mut block = Block::default();
-        block.from_json(self.disk_content[blockID as usize].to_string());
+        let mut block: Block = Block::from_json(self.disk_content[blockID as usize].to_string());
         return block;
+    }
+
+    pub fn read_superblock(&mut self) -> Block
+    {
+        //self.reads = self.reads + 1;
+        let data_to_deserialize_ = r#"{"blockID":0,"nextNode":-1,"payload":"{\"magicNumber\":12345,\"blockCount\":1000,\"inodeCount\":100}"#;
+        let block: Block = serde_json::from_str(&data_to_deserialize_).unwrap();
+        return block;
+
     }
 
     pub fn write(&mut self, mut block: Block) -> bool {
@@ -118,7 +158,7 @@ pub mod block {
     pub struct Block {
         pub blockID: i32,
         pub nextNode: i32,
-        pub data: String,
+        pub payload: String,
     }
 
     impl Block {
@@ -126,14 +166,14 @@ pub mod block {
             Block {
                 blockID: 0,
                 nextNode: 0,
-                data: String::from(""),
+                payload: String::from(""),
             }
         }
-        pub fn new(blockID: i32, nextNode: i32, data: String) -> Block {
+        pub fn new(blockID: i32, nextNode: i32, payload: String) -> Block {
             Block {
                 blockID: blockID,
                 nextNode: nextNode,
-                data: data,
+                payload: payload,
             }
         }
 
@@ -147,7 +187,7 @@ pub mod block {
         }
 
         pub fn get_data(&self) -> &String {
-            return &self.data;
+            return &self.payload;
         }
 
         //Setters
@@ -159,8 +199,8 @@ pub mod block {
             &mut self.nextNode
         }
 
-        pub fn set_data(&mut self, data: String) -> &mut String {
-            &mut self.data
+        pub fn set_data(&mut self, payload: String) -> &mut String {
+            &mut self.payload
         }
 
         /*
@@ -174,9 +214,19 @@ pub mod block {
         /*
             Return a block object from JSON string
         */
-        pub fn from_json(&mut self, source: String) -> Block {
+        pub fn from_json(source: String) -> Block {
             let block: Block = serde_json::from_str(&source).unwrap();
             return block;
+        }
+
+
+        pub fn read_superblock(&mut self) -> Block
+        {
+            //self.reads = self.reads + 1;
+            let data_to_deserialize_ = r#"{"blockID":0,"nextNode":-1,"payload":"{\"magicNumber\":12345,\"blockCount\":1000,\"inodeCount\":100}"#;
+            let block: Block = serde_json::from_str(&data_to_deserialize_).unwrap();
+            return block;
+    
         }
     }
 }
