@@ -458,6 +458,7 @@ impl FileSystem {
     }
 
     pub fn to_json(&self) -> String {
+        //let mut res =
         let serialized_block = serde_json::to_string(&self).unwrap();
 
         return String::from(serialized_block);
