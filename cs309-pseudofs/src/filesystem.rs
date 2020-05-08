@@ -286,6 +286,21 @@ impl FileSystem {
         fs::copy(start_path_name, dest_path_name)?;
         println!("Copy complete!");
         Ok(())
+
+        /*
+            https://www.linuxjournal.com/content/getting-started-rust-working-files-and-doing-file-io
+
+            let mut file = File::create("/tmp/LJ.txt")?;
+        let buffer = "Hello Linux Journal!\n";
+        file.write_all(buffer.as_bytes())?;
+        println!("Finish writing...");
+
+        let mut input = File::open("/tmp/LJ.txt")?;
+        let mut input_buffer = String::new();
+        input.read_to_string(&mut input_buffer)?;
+        print!("Read: {}", input_buffer);
+        Ok(())
+            */
     }
 
     pub fn copy_out(&self) -> std::io::Result<()> {
