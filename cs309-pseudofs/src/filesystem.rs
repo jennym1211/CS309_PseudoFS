@@ -6,7 +6,7 @@ use crate::superblock::Superblock;
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use serde_json::{Result, Value};
+//use serde_json::{Result, Value};
 use std::fs::{self, File};
 use std::io::prelude::*;
 use std::io::BufReader;
@@ -460,11 +460,10 @@ impl FileSystem {
         return result;
     }
 
-    pub fn to_json(&mut self) -> Result<()> {
-        let mut res = &self;
-        let serialized_block = serde_json::to_string_pretty(res)?; //.unwrap()
-        println!("{}", serialized_block);
-        Ok(())
+    pub fn to_json(&self) -> String {
+        let serialized_block = serde_json::to_string(&self).unwrap();
+
+        return String::from(serialized_block);
     }
 
     pub fn from_json(source: String) -> FileSystem {
