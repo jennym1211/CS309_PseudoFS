@@ -248,6 +248,7 @@ pub mod block {
         */
         pub fn from_json(source: String) -> Block {
             let block: Block = serde_json::from_str(&source).unwrap();
+            println!("{:?}", block);
             return block;
         }
     }
