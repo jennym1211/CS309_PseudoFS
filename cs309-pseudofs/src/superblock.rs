@@ -157,6 +157,7 @@ impl Superblock {
     }
     pub fn from_json(source: String) -> Superblock {
         let superblock: Superblock = serde_json::from_str(&source).unwrap();
+        println!("{:?}", superblock);
         return superblock;
     }
 }

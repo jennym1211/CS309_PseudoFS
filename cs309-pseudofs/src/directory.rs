@@ -86,6 +86,7 @@ impl Directory {
 
     pub fn from_json(source: String) -> Directory {
         let directory: Directory = serde_json::from_str(&source).unwrap();
+        println!("{:?}", directory);
         return directory;
     }
 }

@@ -113,6 +113,7 @@ impl Inode {
 
     pub fn from_json(source: String) -> Inode {
         let inode: Inode = serde_json::from_str(&source).unwrap();
+        println!("{:?}", inode);
         return inode;
     }
 }
