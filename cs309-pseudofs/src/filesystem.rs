@@ -458,14 +458,16 @@ impl FileSystem {
     }
 
     pub fn to_json(&self) -> String {
-        //let mut res =
-        let serialized_block = serde_json::to_string(&self).unwrap();
-
+        let mut res = &self;
+        let serialized_block = serde_json::to_string(res).unwrap();
+        println!("{}", serialized_block);
         return String::from(serialized_block);
     }
 
     pub fn from_json(source: String) -> FileSystem {
-        let filesystem: FileSystem = serde_json::from_str(&source).unwrap();
+        let mut res = &source;
+        let filesystem: FileSystem = serde_json::from_str(res).unwrap();
+        println!("{:?}", filesystem);
         return filesystem;
     }
 }
