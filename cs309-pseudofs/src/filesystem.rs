@@ -3,8 +3,10 @@ use crate::disk::block::Block;
 use crate::disk::Disk;
 use crate::inode::{Inode, InodeType, Inodes};
 use crate::superblock::Superblock;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use serde_json::{Result, Value};
 use std::fs::{self, File};
 use std::io::prelude::*;
 use std::io::BufReader;
@@ -13,6 +15,7 @@ use std::io::{BufWriter, Write};
 use std::iter;
 use std::path::Path;
 use std::path::PathBuf;
+
 const INODES_PER_BLOCK: i32 = 50;
 const NEG_ONE: i32 = -1;
 const NEG_TWO: i32 = -2;
@@ -457,16 +460,15 @@ impl FileSystem {
         return result;
     }
 
-    pub fn to_json(&self) -> String {
+    pub fn to_json(&mut self) -> Result<()> {
         let mut res = &self;
-        let serialized_block = serde_json::to_string(res).unwrap();
+        let serialized_block = serde_json::to_string_pretty(res)?; //.unwrap()
         println!("{}", serialized_block);
-        return String::from(serialized_block);
+        Ok(())
     }
 
     pub fn from_json(source: String) -> FileSystem {
-        let mut res = &source;
-        let filesystem: FileSystem = serde_json::from_str(res).unwrap();
+        let filesystem: FileSystem = serde_json::from_str(&source).unwrap();
         println!("{:?}", filesystem);
         return filesystem;
     }
