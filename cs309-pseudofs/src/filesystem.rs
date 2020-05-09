@@ -311,7 +311,7 @@ impl FileSystem {
         println!("Starting copy of file on directory to PC...");
         //let mut end = &self.get_next_node(&self);
         //let mut start = //get the location of file to copy
-        let mut dest_path_name = "C:/Users/Jennifer/Desktop/test2.txt";
+        let mut dest_path_name = "./disk.txt";
         let mut start_path_name = "./disks/disk4.disk";
         fs::copy(start_path_name, dest_path_name)?;
         println!("Copy complete!");
