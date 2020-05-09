@@ -282,7 +282,7 @@ impl FileSystem {
     }
 
     pub fn copy_in(&self) -> std::io::Result<()> {
-        println!("Starting copy of file on PC to directory...");
+        println!("Starting copy of file in directory...");
         //let mut start = &self.get_next_node(&self);
         //let mut end = //get the location of file to copy
         let mut start_path_name = "./disk.txt";
