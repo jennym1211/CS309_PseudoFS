@@ -308,7 +308,7 @@ impl FileSystem {
     }
 
     pub fn copy_out(&self) -> std::io::Result<()> {
-        println!("Starting copy of file on directory to PC...");
+        println!("Starting copy of file on directory...");
         //let mut end = &self.get_next_node(&self);
         //let mut start = //get the location of file to copy
         let mut dest_path_name = "./disk.txt";
