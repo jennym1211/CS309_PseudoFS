@@ -276,8 +276,7 @@ impl FileSystem {
         let reader = BufReader::new(file);
 
         for (index, line) in reader.lines().enumerate() {
-            let line = line.unwrap(); // Ignore errors.
-                                      // Show the line and its number.
+            let line = line.unwrap(); // Ignore errors. Show the line and its number.
             println!("{}. {}", index + 1, line);
         }
     }
@@ -285,6 +284,7 @@ impl FileSystem {
     pub fn copy_in(&self) -> std::io::Result<()> {
         println!("Starting copy of file on PC to directory...");
         //let mut start = &self.get_next_node(&self);
+        //let mut end = //get the location of file to copy
         let mut start_path_name = "C:/Users/Jennifer/Desktop/test.txt";
         let mut dest_path_name = "./disks/disk3.disk";
         fs::copy(start_path_name, dest_path_name)?;
@@ -310,6 +310,7 @@ impl FileSystem {
     pub fn copy_out(&self) -> std::io::Result<()> {
         println!("Starting copy of file on directory to PC...");
         //let mut end = &self.get_next_node(&self);
+        //let mut start = //get the location of file to copy
         let mut dest_path_name = "C:/Users/Jennifer/Desktop/test2.txt";
         let mut start_path_name = "./disks/disk4.disk";
         fs::copy(start_path_name, dest_path_name)?;
