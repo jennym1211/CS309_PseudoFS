@@ -3,8 +3,10 @@ use crate::disk::block::Block;
 use crate::disk::Disk;
 use crate::inode::{Inode, InodeType, Inodes};
 use crate::superblock::Superblock;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+//use serde_json::{Result, Value};
 use std::fs::{self, File};
 use std::io::prelude::*;
 use std::io::BufReader;
@@ -13,6 +15,7 @@ use std::io::{BufWriter, Write};
 use std::iter;
 use std::path::Path;
 use std::path::PathBuf;
+
 const INODES_PER_BLOCK: i32 = 50;
 const NEG_ONE: i32 = -1;
 const NEG_TWO: i32 = -2;
@@ -273,24 +276,42 @@ impl FileSystem {
         let reader = BufReader::new(file);
 
         for (index, line) in reader.lines().enumerate() {
-            let line = line.unwrap(); // Ignore errors.
-                                      // Show the line and its number.
+            let line = line.unwrap(); // Ignore errors. Show the line and its number.
             println!("{}. {}", index + 1, line);
         }
     }
 
     pub fn copy_in(&self) -> std::io::Result<()> {
-        println!("Starting copy of file on PC to directory...");
-        let mut start_path_name = "C:/Users/Jennifer/Desktop/test.txt";
+        println!("Starting copy of file in directory...");
+        //let mut start = &self.get_next_node(&self);
+        //let mut end = //get the location of file to copy
+        let mut start_path_name = "./disk.txt";
         let mut dest_path_name = "./disks/disk3.disk";
         fs::copy(start_path_name, dest_path_name)?;
         println!("Copy complete!");
         Ok(())
+
+        /*
+            https://www.linuxjournal.com/content/getting-started-rust-working-files-and-doing-file-io
+
+            let mut file = File::create("/tmp/LJ.txt")?;
+        let buffer = "Hello Linux Journal!\n";
+        file.write_all(buffer.as_bytes())?;
+        println!("Finish writing...");
+
+        let mut input = File::open("/tmp/LJ.txt")?;
+        let mut input_buffer = String::new();
+        input.read_to_string(&mut input_buffer)?;
+        print!("Read: {}", input_buffer);
+        Ok(())
+            */
     }
 
     pub fn copy_out(&self) -> std::io::Result<()> {
-        println!("Starting copy of file on directory to PC...");
-        let mut dest_path_name = "C:/Users/Jennifer/Desktop/test2.txt";
+        println!("Starting copy of file on directory...");
+        //let mut end = &self.get_next_node(&self);
+        //let mut start = //get the location of file to copy
+        let mut dest_path_name = "./disk.txt";
         let mut start_path_name = "./disks/disk4.disk";
         fs::copy(start_path_name, dest_path_name)?;
         println!("Copy complete!");
@@ -450,6 +471,7 @@ impl FileSystem {
 
     pub fn from_json(source: String) -> FileSystem {
         let filesystem: FileSystem = serde_json::from_str(&source).unwrap();
+        println!("{:?}", filesystem);
         return filesystem;
     }
 }

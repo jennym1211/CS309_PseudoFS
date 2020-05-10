@@ -242,12 +242,19 @@ pub mod block {
             let serialized_block = serde_json::to_string(&self).unwrap();
             return String::from(serialized_block);
         }
+        /*pub fn to_json(&mut self) -> Result<()> {
+            let mut res = &self;
+            let serialized_block = serde_json::to_string_pretty(res)?; //.unwrap()
+            println!("{}", serialized_block);
+            Ok(())
+        }*/
 
         /*
             Return a block object from JSON string
         */
         pub fn from_json(source: String) -> Block {
             let block: Block = serde_json::from_str(&source).unwrap();
+            println!("{:?}", block);
             return block;
         }
     }

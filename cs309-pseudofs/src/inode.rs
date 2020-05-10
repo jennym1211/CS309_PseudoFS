@@ -105,6 +105,12 @@ impl Inode {
         &mut self.c_time
     }
 
+    /*pub fn to_json(&mut self) -> Result<()> {
+        let mut res = &self;
+        let serialized_block = serde_json::to_string_pretty(res)?; //.unwrap()
+        println!("{}", serialized_block);
+        Ok(())
+    }*/
     pub fn to_json(&self) -> String {
         let serialized_block = serde_json::to_string(&self).unwrap();
 
@@ -113,6 +119,7 @@ impl Inode {
 
     pub fn from_json(source: String) -> Inode {
         let inode: Inode = serde_json::from_str(&source).unwrap();
+        println!("{:?}", inode);
         return inode;
     }
 }

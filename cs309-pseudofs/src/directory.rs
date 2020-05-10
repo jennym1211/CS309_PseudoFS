@@ -1,5 +1,7 @@
 use crate::inode::Inode;
+
 use serde::{Deserialize, Serialize};
+use serde_json::{Result, Value};
 use std::collections::HashMap;
 
 /**
@@ -78,6 +80,12 @@ impl Directory {
         return false;
     }
 
+    /*pub fn to_json(&mut self) -> Result<()> {
+        let mut res = &self;
+        let serialized_block = serde_json::to_string_pretty(res)?; //.unwrap()
+        println!("{}", serialized_block);
+        Ok(())
+    }*/
     pub fn to_json(&self) -> String {
         let serialized_block = serde_json::to_string(&self).unwrap();
 
@@ -86,6 +94,7 @@ impl Directory {
 
     pub fn from_json(source: String) -> Directory {
         let directory: Directory = serde_json::from_str(&source).unwrap();
+        println!("{:?}", directory);
         return directory;
     }
 }
