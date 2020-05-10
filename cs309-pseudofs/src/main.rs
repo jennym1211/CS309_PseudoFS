@@ -57,7 +57,7 @@ fn main() {
                     break;
                 }
                 "mount" => {
-                    let path_name = "./disks/diskc.disk";
+                    let path_name = "./disks/disk.disk";
                     path_name.trim_matches(&['\n', '\r'] as &[_]).is_ascii();
 
                     if fs.mount(path_name.to_string()) {

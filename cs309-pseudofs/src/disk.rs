@@ -236,7 +236,7 @@ pub mod block {
         }
 
         /*
-            Serialize block to a JSON string
+            Serialize disk to a JSON string
         */
         pub fn to_json(&mut self) -> String {
             let serialized_block = serde_json::to_string(&self).unwrap();

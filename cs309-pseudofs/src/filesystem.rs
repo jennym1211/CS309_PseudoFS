@@ -170,7 +170,6 @@ impl FileSystem {
         }
 
         let mut rootBlock = Block::new(rootBlockID as i32, -1, self.root.to_json());
-        println!("{:?}", rootBlock);
         self.disk.write(rootBlock);
 
         for rootBlockID in (0..self.superblock.get_totalblocks()).step_by(1) {
@@ -189,18 +188,18 @@ impl FileSystem {
                 .expect("Could not open disk image.");
 
             let mut total_blocks: i32 = 100;
-            let mut total_inodes: i32 = 10;
+            let mut total_inodes: i32 = 1000;
             let mut magic_num = VALID_MAGIC_NUM;
             let mut free_inodes: Vec<Inode> = Vec::new();
             let mut free_blocks: Vec<Block> = Vec::new();
             let mut inodes_vec: Vec<Inode> = Vec::new();
 
             for i in 0..500 {
-                free_inodes = vec![Inode::new(i as i32, InodeType::Free, -1, 0, Utc::now()); 5];
+                free_inodes = vec![Inode::new(i as i32, InodeType::Free, -1, 0, Utc::now()); 500];
             }
 
             for i in 0..1000 {
-                inodes_vec = vec![Inode::new(i as i32, InodeType::Free, -1, 0, Utc::now()); 10];
+                inodes_vec = vec![Inode::new(i as i32, InodeType::Free, -1, 0, Utc::now()); 1000];
             }
 
             for i in 0..50 {
