@@ -1,3 +1,4 @@
+use std::io;
 use std::io::{stdin, stdout, Write};
 mod directory;
 mod disk;
@@ -5,6 +6,12 @@ mod filesystem;
 mod inode;
 mod superblock;
 use filesystem::FileSystem;
+
+fn trim_newline(s: &mut String) {
+    while s.ends_with('\n') || s.ends_with('\r') {
+        s.pop();
+    }
+}
 
 /*
 Utilized code from : https://www.joshmcguigan.com/blog/build-your-own-shell-rust/
@@ -16,6 +23,7 @@ Shell functions
 /*
 Utilized code from : https://www.joshmcguigan.com/blog/build-your-own-shell-rust/
 */
+
 fn main() {
     let mut fs: FileSystem = FileSystem::default();
 
@@ -26,7 +34,10 @@ fn main() {
         stdout().flush().unwrap();
 
         let mut input = String::new();
+        let mut stringContents = String::new();
+        io::stdout().flush();
         stdin().read_line(&mut input).unwrap();
+        let mut file_name_input = String::new();
 
         let size = 1024;
 
@@ -37,30 +48,62 @@ fn main() {
             let command = parts.next().unwrap();
             match command {
                 "create" => {
-                    // println!("Enter the disk image name.");
-                    let path_name = "cs309-pseudofs/disks/disk2.disk";
-                    path_name.trim_matches(&['\n', '\r'] as &[_]).is_ascii();
+                    println!("Enter the disk image name.");
+                    stdout().flush().unwrap();
 
-                    println!("{:?}", path_name.to_string());
-                    fs.create_disk(path_name.to_string(), size);
+                    io::stdin()
+                        .read_line(&mut file_name_input)
+                        .expect("File not found.");
+
+                    let mut path_name: String = String::from("./disks/");
+                    path_name.push_str(&file_name_input.trim());
+                    trim_newline(&mut path_name.to_string());
+                    //path_name.trim_matches(&['\r', '\n'] as &[_]);
+                    path_name.push_str(".disk");
+
+                    println!("Disk name: {:?}", path_name.trim());
+                    fs.create_disk(path_name.trim().to_string(), size);
                 }
                 "format" => {
-                    // println!("Enter the disk image name.");
-                    let path_name = "./disks/disk2.disk";
-                    path_name.trim_matches(&['\n', '\r'] as &[_]).is_ascii();
+                    println!("Enter the disk image name.");
+                    stdout().flush().unwrap();
 
-                    if fs.format(path_name.to_string()) {
+                    io::stdin()
+                        .read_line(&mut file_name_input)
+                        .expect("File not found.");
+
+                    let mut path_name: String = String::from("./disks/");
+                    path_name.push_str(&file_name_input.trim());
+                    trim_newline(&mut path_name.to_string());
+                    //path_name.trim_matches(&['\r', '\n'] as &[_]);
+                    path_name.push_str(".disk");
+
+                    println!("Disk name: {:?}", path_name.trim());
+
+                    if fs.format(path_name.trim().to_string()) {
                         println!("Formatting successful!");
                     } else {
                         eprintln!("There was a problem formatting your disk.");
                     }
+
                     break;
                 }
                 "mount" => {
-                    let path_name = "./disks/disk.disk";
-                    path_name.trim_matches(&['\n', '\r'] as &[_]).is_ascii();
+                    println!("Enter the disk image name.");
+                    stdout().flush().unwrap();
 
-                    if fs.mount(path_name.to_string()) {
+                    io::stdin()
+                        .read_line(&mut file_name_input)
+                        .expect("File not found.");
+
+                    let mut path_name: String = String::from("./disks/");
+                    path_name.push_str(&file_name_input.trim());
+                    trim_newline(&mut path_name.to_string());
+                    //path_name.trim_matches(&['\r', '\n'] as &[_]);
+                    path_name.push_str(".disk");
+
+                    println!("Disk name: {:?}", path_name.trim());
+                    if fs.mount(path_name.trim().to_string()) {
                         println!("Mounting successful!");
                     } else {
                         eprintln!("There was a problem mounting your disk.");
@@ -80,10 +123,22 @@ fn main() {
                     break;
                 }
                 "delete" => {
-                    let path_name = "./disks/disk5.disk";
-                    path_name.trim_matches(&['\n', '\r'] as &[_]).is_ascii();
+                    println!("Enter the disk image name.");
+                    stdout().flush().unwrap();
 
-                    if fs.delete_file(path_name.to_string()) {
+                    io::stdin()
+                        .read_line(&mut file_name_input)
+                        .expect("File not found.");
+
+                    let mut path_name: String = String::from("./disks/");
+                    path_name.push_str(&file_name_input.trim());
+                    trim_newline(&mut path_name.to_string());
+                    //path_name.trim_matches(&['\r', '\n'] as &[_]);
+                    path_name.push_str(".disk");
+
+                    println!("Disk name: {:?}", path_name.trim());
+
+                    if fs.delete_file(path_name.trim().to_string()) {
                         println!("File deletion successful!");
                     } else {
                         eprintln!("There was a problem deleting your file.");
@@ -91,10 +146,21 @@ fn main() {
                     break;
                 }
                 "cat" => {
-                    let path_name = "./disks/disk2.disk";
-                    path_name.trim_matches(&['\n', '\r'] as &[_]).is_ascii();
+                    println!("Enter the disk image name.");
+                    stdout().flush().unwrap();
 
-                    fs.read_file(path_name.to_string());
+                    io::stdin()
+                        .read_line(&mut file_name_input)
+                        .expect("File not found.");
+
+                    let mut path_name: String = String::from("./disks/");
+                    path_name.push_str(&file_name_input.trim());
+                    trim_newline(&mut path_name.to_string());
+                    //path_name.trim_matches(&['\r', '\n'] as &[_]);
+                    path_name.push_str(".disk");
+
+                    println!("Disk name: {:?}", path_name.trim());
+                    fs.read_file(path_name.trim().to_string());
                     break;
                 }
                 "ls" => {
@@ -102,7 +168,23 @@ fn main() {
                     break;
                 }
                 "copyin" => {
-                    fs.copy_in().expect("Could not write file in.");
+                    println!("Enter the disk image name.");
+                    stdout().flush().unwrap();
+
+                    io::stdin()
+                        .read_line(&mut file_name_input)
+                        .expect("File not found.");
+
+                    let mut path_name: String = String::from("./disks/");
+                    path_name.push_str(&file_name_input.trim());
+                    trim_newline(&mut path_name.to_string());
+                    //path_name.trim_matches(&['\r', '\n'] as &[_]);
+                    path_name.push_str(".disk");
+
+                    println!("Disk name: {:?}", path_name.trim());
+
+                    fs.copy_in(path_name.trim().to_string())
+                        .expect("Could not write file in.");
                     break;
                 }
                 "copyout" => {

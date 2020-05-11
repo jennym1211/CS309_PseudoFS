@@ -94,18 +94,6 @@ impl Disk {
         }
     }
 
-    pub fn run(&mut self) -> std::io::Result<()> {
-        let mut file = File::open(self.disk_name.clone())?;
-
-        for i in 0..self.disk_content.len() {
-            self.writes = self.writes + 1;
-            file.write(self.disk_content[i].clone().as_bytes())?;
-            file.write("\n".as_bytes());
-        }
-        file.flush().expect("Could not flush file.");
-        Ok(())
-    }
-
     /**
      * Read a block of data from the disk
      * return The block stored on this line, or null if the block ID is invalid
@@ -126,7 +114,7 @@ impl Disk {
             && *self.is_mounted() == true
         {
             self.writes = self.writes + 1;
-            //self.disk_content[*block.get_blockid() as usize] = block.to_json();
+            self.disk_content[*block.get_blockid() as usize] = block.to_json();
             return true;
         } else {
             return false;
@@ -254,7 +242,7 @@ pub mod block {
         */
         pub fn from_json(source: String) -> Block {
             let block: Block = serde_json::from_str(&source).unwrap();
-            println!("{:?}", block);
+            //println!("{:?}", block);
             return block;
         }
     }

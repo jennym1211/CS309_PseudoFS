@@ -3,14 +3,16 @@ use crate::inode::Inode;
 use crate::inode::InodeType;
 use serde::{Deserialize, Serialize};
 
-const VALID_MAGIC_NUM: &str = "0x70736575646F4653"; //always the magic number for pseudo FS
+const VALID_MAGIC_NUM: i64 = 0x70736575646F4653; //always the magic number for pseudo FS
 
 /**
  *  Data structure that represents a superblock on the OS.
  */
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Superblock {
-    pub magic_number: String, // 0x70736575646F4653 magic number
+    pub blockID: i8,
+    pub nextNode: i8,
+    pub magic_number: i64, // 0x70736575646F4653 magic number
     pub total_blocks: i32,
     pub total_inodes: i32,
     pub free_blocks: Vec<Block>,
@@ -30,7 +32,9 @@ impl Superblock {
         let total_blocks = 0;
 
         Superblock {
-            magic_number: VALID_MAGIC_NUM.to_string(),
+            blockID: 0,
+            nextNode: 0,
+            magic_number: VALID_MAGIC_NUM,
             total_blocks: total_blocks,
             free_blocks: free_blocks,
             inodes_vec: inodes_vec,
@@ -44,7 +48,7 @@ impl Superblock {
      */
     pub fn new(
         &mut self,
-        mut magic_number: String,
+        mut magic_number: i64,
         mut total_blocks: i32,
         mut free_blocks: Vec<Block>,
         mut inodes_vec: Vec<Inode>,
@@ -54,13 +58,15 @@ impl Superblock {
 
         self.set_inodes(self.inodes_vec.clone());
 
-        if self.magic_number == VALID_MAGIC_NUM.to_string() {
-            magic_number = VALID_MAGIC_NUM.to_string();
+        if self.magic_number == VALID_MAGIC_NUM {
+            magic_number = VALID_MAGIC_NUM;
         } else {
             eprintln!("Invalid magic number!");
-            self.magic_number = VALID_MAGIC_NUM.to_string();
+            self.magic_number = VALID_MAGIC_NUM;
         }
         Superblock {
+            blockID: 0,
+            nextNode: 0,
             magic_number: magic_number,
             total_blocks: total_blocks,
             free_blocks: free_blocks,
@@ -70,7 +76,7 @@ impl Superblock {
         }
     }
 
-    pub fn set_magic_number(&mut self, magic_number: String) -> &mut String {
+    pub fn set_magic_number(&mut self, magic_number: i64) -> &mut i64 {
         &mut self.magic_number
     }
 
